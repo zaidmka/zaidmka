@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="zaidmka/zaidmka.Client/zaidmka.Client.csproj" />
+  <Project Path="zaidmka/zaidmka/zaidmka.csproj" />
+</Solution>

@@ -1,0 +1,882 @@
+﻿@page "/about"
+@rendermode InteractiveWebAssembly
+
+<PageTitle>About | Zaid MKA</PageTitle>
+
+<div class="about-page" dir="@(_arabic ? "rtl" : "ltr")">
+
+    <div class="about-container language-row">
+        <div class="language-switch">
+
+            <button type="button"
+                    class="@(!_arabic ? "active" : "")"
+                    @onclick="() => _arabic = false">
+                English
+            </button>
+
+            <button type="button"
+                    class="@(_arabic ? "active" : "")"
+                    @onclick="() => _arabic = true">
+                العربية
+            </button>
+
+        </div>
+    </div>
+
+    @if (_arabic)
+    {
+        @ArabicContent
+    }
+    else
+    {
+        @EnglishContent
+    }
+
+</div>
+
+
+@code {
+
+    private bool _arabic;
+
+
+    private RenderFragment EnglishContent => @<text>
+
+        <!-- HERO -->
+        <section class="about-hero">
+
+            <div class="about-container hero-grid">
+
+                <div class="hero-copy">
+
+                    <span class="eyebrow">
+                        ABOUT ME
+                    </span>
+
+                    <h1>
+                        Hi, I'm
+                        <span>Zaid.</span>
+                    </h1>
+
+                    <h2>
+                        I build practical .NET applications
+                        that solve real problems.
+                    </h2>
+
+                    <div class="accent-line"></div>
+
+                    <p>
+                        I'm a software engineer focused on building reliable,
+                        maintainable systems using the .NET ecosystem.
+                        I enjoy turning complex requirements into clear,
+                        efficient and user-friendly solutions.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <a href="/projects"
+                           class="btn-main">
+                            View Projects
+                            <span>→</span>
+                        </a>
+
+                        <a href="/tools"
+                           class="btn-secondary">
+                            Explore Tools
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-photo">
+
+                    <div class="photo-orbit orbit-one"></div>
+                    <div class="photo-orbit orbit-two"></div>
+
+                    <div class="photo-ring">
+
+                        <img src="/images/zaid-profile.png"
+                             alt="Zaid MKA profile photo"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                        <div class="photo-placeholder">
+                            <span>ZM</span>
+                            <small>Profile photo</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- METRICS -->
+        <section class="metrics-section">
+
+            <div class="about-container metrics-grid">
+
+                <div class="metric-item">
+                    <div class="metric-icon">⌘</div>
+
+                    <div>
+                        <strong>Real Systems</strong>
+                        <span>Built for production</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">▱</div>
+
+                    <div>
+                        <strong>Full Stack</strong>
+                        <span>Backend to frontend</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">◎</div>
+
+                    <div>
+                        <strong>Problem Solver</strong>
+                        <span>Practical engineering</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">↗</div>
+
+                    <div>
+                        <strong>Always Learning</strong>
+                        <span>Improving every day</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- WHAT I DO -->
+        <section class="about-section">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">01</span>
+                    <h2>What I Do</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        Software designed around real workflows.
+                    </p>
+                </div>
+
+
+                <div class="section-panel">
+
+                    <div class="section-description">
+
+                        <p>
+                            I develop web applications and internal systems
+                            using the .NET ecosystem. My work covers database
+                            design, backend logic, APIs, user interfaces,
+                            deployment and production support.
+                        </p>
+
+                        <p>
+                            I focus on building software that remains reliable,
+                            secure and maintainable as requirements grow.
+                        </p>
+
+                    </div>
+
+
+                    <div class="skill-grid">
+
+                        <div class="skill-card">
+                            <div class="skill-icon">▤</div>
+                            <strong>Backend</strong>
+                            <span>ASP.NET Core, Web APIs, EF Core</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">⌗</div>
+                            <strong>Frontend</strong>
+                            <span>Blazor, WebAssembly, HTML, CSS</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">◉</div>
+                            <strong>Databases</strong>
+                            <span>PostgreSQL, Oracle, SQL</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">☁</div>
+                            <strong>Deployment</strong>
+                            <span>IIS, Windows Server, HTTPS</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- APPROACH -->
+        <section class="about-section alternate">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">02</span>
+                    <h2>My Approach</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        How I think about every project.
+                    </p>
+                </div>
+
+
+                <div class="section-panel approach-grid">
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">◎</div>
+
+                        <h3>Understand First</h3>
+
+                        <p>
+                            Understand the workflow, the real problem
+                            and the goal before writing code.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">✣</div>
+
+                        <h3>Keep It Practical</h3>
+
+                        <p>
+                            Prefer simple and maintainable solutions
+                            over unnecessary complexity.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">◇</div>
+
+                        <h3>Build for Reality</h3>
+
+                        <p>
+                            Real environments include unreliable networks,
+                            permissions, legacy systems and unexpected data.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">▣</div>
+
+                        <h3>Keep Learning</h3>
+
+                        <p>
+                            Every difficult bug becomes knowledge
+                            that improves the next solution.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TECH STACK -->
+        <section class="about-section">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">03</span>
+                    <h2>Tech Stack</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        Technologies and tools I work with.
+                    </p>
+                </div>
+
+
+                <div class="section-panel tech-panel">
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>&lt;/&gt;</span>
+                            Languages
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>C#</span>
+                            <span>SQL</span>
+                            <span>JavaScript</span>
+                            <span>HTML</span>
+                            <span>CSS</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>▱</span>
+                            Frameworks
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>.NET</span>
+                            <span>ASP.NET Core</span>
+                            <span>Blazor</span>
+                            <span>Entity Framework Core</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>◉</span>
+                            Databases
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>PostgreSQL</span>
+                            <span>Oracle</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>☁</span>
+                            Infrastructure
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>IIS</span>
+                            <span>Windows Server</span>
+                            <span>Active Directory</span>
+                            <span>HTTPS / PKI</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SITE -->
+        <section class="about-section alternate">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">04</span>
+                    <h2>Why This Site?</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        Build. Learn. Share.
+                    </p>
+                </div>
+
+
+                <div class="section-panel purpose-panel">
+
+                    <div class="purpose-icon">
+                        ◎
+                    </div>
+
+                    <p>
+                        This site is where I share useful developer tools,
+                        practical guides, solutions to problems I've encountered,
+                        and things I've learned while building real-world systems.
+                    </p>
+
+                    <div class="purpose-actions">
+
+                        <a href="/tools" class="btn-main">
+                            Explore Tools →
+                        </a>
+
+                        <a href="/projects" class="btn-secondary">
+                            View Projects →
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="quote-section">
+
+            <div class="about-container">
+                <blockquote>
+                    <span>“</span>
+                    Code is not just what I write,
+                    <strong>it's how I solve problems.</strong>
+                    <span>”</span>
+                </blockquote>
+            </div>
+
+        </section>
+
+    </text>;
+
+
+    private RenderFragment ArabicContent => @<text>
+
+        <!-- HERO -->
+        <section class="about-hero">
+
+            <div class="about-container hero-grid">
+
+                <div class="hero-copy">
+
+                    <span class="eyebrow">
+                        نبذة عني
+                    </span>
+
+                    <h1>
+                        مرحباً، أنا
+                        <span>زيد.</span>
+                    </h1>
+
+                    <h2>
+                        أبني تطبيقات .NET عملية
+                        لحل مشاكل حقيقية.
+                    </h2>
+
+                    <div class="accent-line"></div>
+
+                    <p>
+                        أنا مهندس برمجيات أركز على بناء أنظمة موثوقة
+                        وقابلة للصيانة باستخدام منظومة .NET،
+                        وأستمتع بتحويل المتطلبات المعقدة إلى حلول
+                        واضحة وفعالة وسهلة الاستخدام.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <a href="/projects"
+                           class="btn-main">
+                            مشاهدة المشاريع
+                            <span>←</span>
+                        </a>
+
+                        <a href="/tools"
+                           class="btn-secondary">
+                            استكشف الأدوات
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-photo">
+
+                    <div class="photo-orbit orbit-one"></div>
+                    <div class="photo-orbit orbit-two"></div>
+
+                    <div class="photo-ring">
+
+                        <img src="/images/zaid-profile.png"
+                             alt="صورة زيد الشخصية"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+                        <div class="photo-placeholder">
+                            <span>ZM</span>
+                            <small>الصورة الشخصية</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="metrics-section">
+
+            <div class="about-container metrics-grid">
+
+                <div class="metric-item">
+                    <div class="metric-icon">⌘</div>
+                    <div>
+                        <strong>أنظمة حقيقية</strong>
+                        <span>مصممة لبيئات الإنتاج</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">▱</div>
+                    <div>
+                        <strong>Full Stack</strong>
+                        <span>من Backend إلى Frontend</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">◎</div>
+                    <div>
+                        <strong>حل المشكلات</strong>
+                        <span>هندسة عملية وواضحة</span>
+                    </div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-icon">↗</div>
+                    <div>
+                        <strong>تعلم مستمر</strong>
+                        <span>تطوير المعرفة يومياً</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="about-section">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">01</span>
+                    <h2>ماذا أعمل؟</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        أنظمة مبنية حول سير العمل الحقيقي.
+                    </p>
+                </div>
+
+
+                <div class="section-panel">
+
+                    <div class="section-description">
+
+                        <p>
+                            أطور تطبيقات ويب وأنظمة داخلية باستخدام
+                            منظومة .NET، ويشمل عملي تصميم قواعد البيانات،
+                            منطق النظام، Web APIs، واجهات المستخدم،
+                            النشر ودعم بيئة الإنتاج.
+                        </p>
+
+                        <p>
+                            أركز على بناء أنظمة موثوقة وآمنة
+                            وقابلة للصيانة مع تطور المتطلبات.
+                        </p>
+
+                    </div>
+
+
+                    <div class="skill-grid">
+
+                        <div class="skill-card">
+                            <div class="skill-icon">▤</div>
+                            <strong>Backend</strong>
+                            <span>ASP.NET Core, Web APIs, EF Core</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">⌗</div>
+                            <strong>Frontend</strong>
+                            <span>Blazor, WebAssembly, HTML, CSS</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">◉</div>
+                            <strong>قواعد البيانات</strong>
+                            <span>PostgreSQL, Oracle, SQL</span>
+                        </div>
+
+                        <div class="skill-card">
+                            <div class="skill-icon">☁</div>
+                            <strong>النشر والاستضافة</strong>
+                            <span>IIS, Windows Server, HTTPS</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="about-section alternate">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">02</span>
+                    <h2>منهجي في العمل</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        الطريقة التي أتعامل بها مع كل مشروع.
+                    </p>
+                </div>
+
+
+                <div class="section-panel approach-grid">
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">◎</div>
+
+                        <h3>الفهم أولاً</h3>
+
+                        <p>
+                            أفهم سير العمل والمشكلة الحقيقية
+                            والهدف قبل البدء بكتابة الكود.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">✣</div>
+
+                        <h3>حلول عملية</h3>
+
+                        <p>
+                            أفضل الحلول البسيطة والقابلة للصيانة
+                            على التعقيد غير الضروري.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">◇</div>
+
+                        <h3>البناء للواقع</h3>
+
+                        <p>
+                            البيئة الحقيقية تشمل شبكات غير مستقرة،
+                            وصلاحيات، وأنظمة قديمة وبيانات غير متوقعة.
+                        </p>
+
+                    </div>
+
+
+                    <div class="approach-item">
+
+                        <div class="approach-icon">▣</div>
+
+                        <h3>التعلم المستمر</h3>
+
+                        <p>
+                            كل مشكلة صعبة تتحول إلى معرفة
+                            تجعل الحل التالي أفضل.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="about-section">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">03</span>
+                    <h2>التقنيات</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        التقنيات والأدوات التي أعمل بها.
+                    </p>
+                </div>
+
+
+                <div class="section-panel tech-panel">
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>&lt;/&gt;</span>
+                            لغات البرمجة
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>C#</span>
+                            <span>SQL</span>
+                            <span>JavaScript</span>
+                            <span>HTML</span>
+                            <span>CSS</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>▱</span>
+                            Frameworks
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>.NET</span>
+                            <span>ASP.NET Core</span>
+                            <span>Blazor</span>
+                            <span>Entity Framework Core</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>◉</span>
+                            قواعد البيانات
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>PostgreSQL</span>
+                            <span>Oracle</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="tech-row">
+
+                        <div class="tech-title">
+                            <span>☁</span>
+                            البنية التحتية
+                        </div>
+
+                        <div class="tech-tags">
+                            <span>IIS</span>
+                            <span>Windows Server</span>
+                            <span>Active Directory</span>
+                            <span>HTTPS / PKI</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="about-section alternate">
+
+            <div class="about-container section-grid">
+
+                <div class="section-side">
+                    <span class="section-index">04</span>
+                    <h2>لماذا هذا الموقع؟</h2>
+                    <div class="side-line"></div>
+
+                    <p>
+                        أبني. أتعلم. أشارك.
+                    </p>
+                </div>
+
+
+                <div class="section-panel purpose-panel">
+
+                    <div class="purpose-icon">
+                        ◎
+                    </div>
+
+                    <p>
+                        هذا الموقع هو المكان الذي أشارك فيه أدوات مفيدة
+                        للمطورين، وشروحات عملية، وحلولاً للمشكلات التي
+                        واجهتها، وما تعلمته أثناء بناء أنظمة حقيقية.
+                    </p>
+
+                    <div class="purpose-actions">
+
+                        <a href="/tools" class="btn-main">
+                            استكشف الأدوات ←
+                        </a>
+
+                        <a href="/projects" class="btn-secondary">
+                            المشاريع ←
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="quote-section">
+
+            <div class="about-container">
+                <blockquote>
+                    <span>”</span>
+                    الكود ليس مجرد ما أكتبه،
+                    <strong>بل الطريقة التي أحل بها المشكلات.</strong>
+                    <span>“</span>
+                </blockquote>
+            </div>
+
+        </section>
+
+    </text>;
+}

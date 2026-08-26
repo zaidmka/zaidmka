@@ -1,0 +1,855 @@
+﻿@page "/"
+
+<PageTitle>Zaid MKA | Developer Hub</PageTitle>
+
+<div class="home-page">
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="hero-glow glow-one"></div>
+        <div class="hero-glow glow-two"></div>
+
+        <div class="hero-container">
+
+            <div class="hero-content">
+
+                <div class="hello-badge">
+                    <span>👋</span>
+                    Hello, I'm
+                </div>
+
+                <h1>
+                    Zaid <span>MKA</span>
+                </h1>
+
+                <div class="hero-role">
+                    Software Engineer
+                    <span class="dot"></span>
+                    .NET Developer
+                </div>
+
+                <p class="hero-description">
+                    I build practical software, developer tools and technical
+                    resources that solve real-world problems.
+                </p>
+
+                <div class="hero-actions">
+
+                    <a href="/tools" class="primary-button">
+                        Explore Tools
+                        <span>→</span>
+                    </a>
+
+                    <a href="/projects" class="secondary-button">
+                        View Projects
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-visual">
+
+                <div class="code-window">
+
+                    <div class="code-header">
+                        <div class="window-buttons">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <span>Program.cs</span>
+                    </div>
+
+                    <div class="code-body">
+
+                        <div>
+                            <span class="code-purple">var</span>
+                            developer =
+                            <span class="code-purple">new</span>
+                            <span class="code-green">Developer</span>();
+                        </div>
+
+                        <br />
+
+                        <div>
+                            developer.<span class="code-blue">Build</span>();
+                        </div>
+
+                        <div>
+                            developer.<span class="code-blue">Learn</span>();
+                        </div>
+
+                        <div>
+                            developer.<span class="code-blue">Share</span>();
+                        </div>
+
+                        <br />
+
+                        <div class="code-comment">
+                            // Build things that matter.
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="tech-chip chip-dotnet">
+                    .NET
+                </div>
+
+                <div class="tech-chip chip-blazor">
+                    Blazor
+                </div>
+
+                <div class="tech-chip chip-db">
+                    PostgreSQL
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SEARCH -->
+    <section class="search-section">
+
+        <div class="section-container">
+
+            <div class="search-intro">
+
+                <span class="section-label">
+                    DEVELOPER HUB
+                </span>
+
+                <h2>
+                    What do you need help with?
+                </h2>
+
+                <p>
+                    Search tools, guides, common errors and technical solutions.
+                </p>
+
+            </div>
+
+
+            <div class="main-search">
+
+                <span class="search-icon">⌕</span>
+
+                <input type="text"
+                       placeholder="Try: JWT, JSON, Blazor IIS, 500.31..." />
+
+                <button type="button">
+                    Search
+                </button>
+
+            </div>
+
+
+            <div class="quick-search">
+
+                <span>Popular:</span>
+
+                <a href="/tools/json">JSON Formatter</a>
+
+                <a href="/tools/jwt">JWT Decoder</a>
+
+                <a href="/fixes">HTTP 500.31</a>
+
+                <a href="/guides">Blazor IIS</a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TOOLS -->
+    <section class="tools-section">
+
+        <div class="section-container">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-label">
+                        TOOLS
+                    </span>
+
+                    <h2>Popular Developer Tools</h2>
+
+                    <p>
+                        Fast, simple tools designed to run directly in your browser.
+                    </p>
+                </div>
+
+                <a href="/tools" class="view-all">
+                    View all tools →
+                </a>
+
+            </div>
+
+
+            <div class="tools-grid">
+
+                <a href="/tools/json" class="tool-card">
+
+                    <div class="tool-icon">
+                        { }
+                    </div>
+
+                    <div>
+                        <h3>JSON Formatter</h3>
+                        <p>
+                            Format, validate and inspect JSON instantly.
+                        </p>
+                    </div>
+
+                    <span class="card-arrow">↗</span>
+
+                </a>
+
+
+                <a href="/tools/jwt" class="tool-card">
+
+                    <div class="tool-icon">
+                        JWT
+                    </div>
+
+                    <div>
+                        <h3>JWT Decoder</h3>
+                        <p>
+                            Decode JWT tokens locally in your browser.
+                        </p>
+                    </div>
+
+                    <span class="card-arrow">↗</span>
+
+                </a>
+
+
+                <a href="/tools/guid" class="tool-card">
+
+                    <div class="tool-icon">
+                        #
+                    </div>
+
+                    <div>
+                        <h3>GUID Generator</h3>
+                        <p>
+                            Generate secure UUID / GUID values instantly.
+                        </p>
+                    </div>
+
+                    <span class="card-arrow">↗</span>
+
+                </a>
+
+
+                <a href="/tools/base64" class="tool-card">
+
+                    <div class="tool-icon">
+                        64
+                    </div>
+
+                    <div>
+                        <h3>Base64</h3>
+                        <p>
+                            Encode and decode Base64 text locally.
+                        </p>
+                    </div>
+
+                    <span class="card-arrow">↗</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- GUIDES + FIXES -->
+    <section class="content-section">
+
+        <div class="section-container">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-label">LEARN & FIX</span>
+
+                    <h2>Guides & Common Fixes</h2>
+
+                    <p>
+                        Practical solutions, troubleshooting notes and developer guides.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="content-grid">
+
+                <div class="content-column">
+
+                    <div class="column-header">
+                        <div>
+                            <span class="mini-label">LATEST GUIDES</span>
+                            <h3>Learn something useful</h3>
+                        </div>
+
+                        <a href="/guides">
+                            View all →
+                        </a>
+                    </div>
+
+
+                    <a href="/guides/blazor-iis"
+                       class="article-card">
+
+                        <div class="article-meta">
+                            <span class="category-dot"></span>
+                            .NET / IIS
+                        </div>
+
+                        <h4>
+                            Deploying Blazor applications on IIS
+                        </h4>
+
+                        <p>
+                            A practical guide to publishing, hosting and troubleshooting
+                            Blazor applications on Windows Server.
+                        </p>
+
+                        <div class="article-footer">
+                            <span>8 min read</span>
+                            <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <a href="/guides/jwt-authentication"
+                       class="article-card">
+
+                        <div class="article-meta">
+                            <span class="category-dot"></span>
+                            ASP.NET Core
+                        </div>
+
+                        <h4>
+                            JWT Authentication in ASP.NET Core
+                        </h4>
+
+                        <p>
+                            Understand tokens, claims, roles and authentication
+                            flow without unnecessary complexity.
+                        </p>
+
+                        <div class="article-footer">
+                            <span>10 min read</span>
+                            <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <a href="/guides/postgresql-backup"
+                       class="article-card">
+
+                        <div class="article-meta">
+                            <span class="category-dot"></span>
+                            PostgreSQL
+                        </div>
+
+                        <h4>
+                            PostgreSQL backup and restore
+                        </h4>
+
+                        <p>
+                            Useful commands and deployment notes for managing
+                            PostgreSQL databases safely.
+                        </p>
+
+                        <div class="article-footer">
+                            <span>6 min read</span>
+                            <span>→</span>
+                        </div>
+
+                    </a>
+
+                </div>
+
+
+                <div class="content-column">
+
+                    <div class="column-header">
+                        <div>
+                            <span class="mini-label danger-label">COMMON FIXES</span>
+                            <h3>Problem → Solution</h3>
+                        </div>
+
+                        <a href="/fixes">
+                            View all →
+                        </a>
+                    </div>
+
+
+                    <a href="/fixes/http-500-31"
+                       class="fix-card">
+
+                        <div class="fix-status">
+                            HTTP
+                        </div>
+
+                        <div class="fix-content">
+                            <span class="fix-code">500.31</span>
+
+                            <h4>
+                                Failed to load ASP.NET Core runtime
+                            </h4>
+
+                            <p>
+                                Runtime missing or incorrect hosting bundle installed.
+                            </p>
+                        </div>
+
+                        <span class="fix-arrow">→</span>
+
+                    </a>
+
+
+                    <a href="/fixes/access-denied"
+                       class="fix-card">
+
+                        <div class="fix-status">
+                            IIS
+                        </div>
+
+                        <div class="fix-content">
+                            <span class="fix-code">ACCESS DENIED</span>
+
+                            <h4>
+                                Access to the path is denied
+                            </h4>
+
+                            <p>
+                                Fix application pool identity and folder permissions.
+                            </p>
+                        </div>
+
+                        <span class="fix-arrow">→</span>
+
+                    </a>
+
+
+                    <a href="/fixes/postgresql-23505"
+                       class="fix-card">
+
+                        <div class="fix-status">
+                            DB
+                        </div>
+
+                        <div class="fix-content">
+                            <span class="fix-code">23505</span>
+
+                            <h4>
+                                Duplicate key value violates unique constraint
+                            </h4>
+
+                            <p>
+                                Understand duplicate keys and sequence mismatches.
+                            </p>
+                        </div>
+
+                        <span class="fix-arrow">→</span>
+
+                    </a>
+
+
+                    <a href="/fixes/ora-01861"
+                       class="fix-card">
+
+                        <div class="fix-status">
+                            ORA
+                        </div>
+
+                        <div class="fix-content">
+                            <span class="fix-code">ORA-01861</span>
+
+                            <h4>
+                                Literal does not match format string
+                            </h4>
+
+                            <p>
+                                Common Oracle date formatting causes and fixes.
+                            </p>
+                        </div>
+
+                        <span class="fix-arrow">→</span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TECH BRIEFS -->
+    <section class="news-section">
+
+        <div class="section-container">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-label">
+                        TECH BRIEFS
+                    </span>
+
+                    <h2>
+                        Developer News, Without the Noise
+                    </h2>
+
+                    <p>
+                        Short updates with one focus: why it matters to developers.
+                    </p>
+                </div>
+
+                <a href="/news"
+                   class="view-all">
+                    All briefs →
+                </a>
+
+            </div>
+
+
+            <div class="news-grid">
+
+                <a href="/news"
+                   class="news-card featured-news">
+
+                    <div class="news-top">
+
+                        <span class="news-badge">
+                            .NET
+                        </span>
+
+                        <span class="news-date">
+                            Latest
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        What changed in the latest .NET ecosystem?
+                    </h3>
+
+                    <p>
+                        A short breakdown of the updates that actually matter
+                        when building modern .NET applications.
+                    </p>
+
+                    <span class="read-more">
+                        Read brief →
+                    </span>
+
+                </a>
+
+
+                <a href="/news"
+                   class="news-card">
+
+                    <div class="news-top">
+
+                        <span class="news-badge">
+                            AI
+                        </span>
+
+                        <span class="news-date">
+                            Update
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        AI tools for software developers
+                    </h3>
+
+                    <p>
+                        Useful changes in developer-focused AI tools and workflows.
+                    </p>
+
+                    <span class="read-more">
+                        Read brief →
+                    </span>
+
+                </a>
+
+
+                <a href="/news"
+                   class="news-card">
+
+                    <div class="news-top">
+
+                        <span class="news-badge">
+                            DATABASE
+                        </span>
+
+                        <span class="news-date">
+                            Update
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        PostgreSQL ecosystem updates
+                    </h3>
+
+                    <p>
+                        Features, tooling and performance changes worth knowing.
+                    </p>
+
+                    <span class="read-more">
+                        Read brief →
+                    </span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROJECTS -->
+    <section class="projects-section">
+
+        <div class="section-container">
+
+            <div class="section-header">
+
+                <div>
+                    <span class="section-label">
+                        PROJECTS
+                    </span>
+
+                    <h2>
+                        Things I've Built
+                    </h2>
+
+                    <p>
+                        Selected software projects and real-world engineering work.
+                    </p>
+                </div>
+
+                <a href="/projects"
+                   class="view-all">
+                    View projects →
+                </a>
+
+            </div>
+
+
+            <div class="projects-grid">
+
+                <a href="/projects"
+                   class="project-card">
+
+                    <div class="project-preview">
+
+                        <div class="fake-window">
+
+                            <div class="fake-window-header">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                            <div class="fake-window-content">
+
+                                <div class="fake-sidebar"></div>
+
+                                <div class="fake-main">
+
+                                    <div class="fake-title"></div>
+
+                                    <div class="fake-stats">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+
+                                    <div class="fake-table">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="project-info">
+
+                        <div class="project-heading">
+
+                            <div>
+                                <span class="project-type">
+                                    WEB APPLICATION
+                                </span>
+
+                                <h3>
+                                    Enterprise Management System
+                                </h3>
+                            </div>
+
+                            <span class="project-arrow">
+                                ↗
+                            </span>
+
+                        </div>
+
+                        <p>
+                            A secure .NET application designed for real-world
+                            data management and operational workflows.
+                        </p>
+
+                        <div class="project-tech">
+                            <span>.NET</span>
+                            <span>Blazor</span>
+                            <span>PostgreSQL</span>
+                        </div>
+
+                    </div>
+
+                </a>
+
+
+                <a href="/projects"
+                   class="project-card">
+
+                    <div class="project-preview">
+
+                        <div class="terminal-preview">
+
+                            <div>
+                                <span class="terminal-sign">$</span>
+                                dotnet run
+                            </div>
+
+                            <div class="terminal-success">
+                                ✓ Application started
+                            </div>
+
+                            <div>
+                                Listening on https://localhost
+                            </div>
+
+                            <div class="terminal-cursor">
+                                _
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="project-info">
+
+                        <div class="project-heading">
+
+                            <div>
+                                <span class="project-type">
+                                    DEVELOPER TOOLS
+                                </span>
+
+                                <h3>
+                                    ZaidMKA Developer Hub
+                                </h3>
+                            </div>
+
+                            <span class="project-arrow">
+                                ↗
+                            </span>
+
+                        </div>
+
+                        <p>
+                            Tools, guides, fixes and developer resources built
+                            around practical software engineering problems.
+                        </p>
+
+                        <div class="project-tech">
+                            <span>.NET 10</span>
+                            <span>Blazor</span>
+                            <span>WASM</span>
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+    <section class="final-cta">
+
+        <div class="section-container">
+
+            <div class="cta-box">
+
+                <div>
+
+                    <span class="section-label">
+                        KEEP BUILDING
+                    </span>
+
+                    <h2>
+                        Have an idea or a problem to solve?
+                    </h2>
+
+                    <p>
+                        Software engineering is mostly about solving one useful
+                        problem at a time.
+                    </p>
+
+                </div>
+
+                <a href="/contact"
+                   class="primary-button">
+
+                    Let's Connect
+
+                    <span>→</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+</div>

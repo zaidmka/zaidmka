@@ -1,0 +1,573 @@
+﻿@page "/tools/json"
+@rendermode InteractiveWebAssembly
+
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JS
+
+<PageTitle>JSON Formatter | Zaid MKA</PageTitle>
+
+<div class="tool-page">
+
+    <section class="tool-hero">
+        <div class="tool-container">
+
+            <div class="tool-breadcrumb">
+                <a href="/">Home</a>
+                <span>/</span>
+                <a href="/tools">Tools</a>
+                <span>/</span>
+                <span>JSON Formatter</span>
+            </div>
+
+            <div class="tool-heading">
+
+                <div>
+                    <span class="tool-label">DEVELOPER TOOL</span>
+
+                    <h1>JSON Formatter</h1>
+
+                    <p>
+                        Format, minify and validate JSON directly in your browser.
+                        Your data never leaves your device.
+                    </p>
+                </div>
+
+                <div class="privacy-badge">
+                    <span class="privacy-dot"></span>
+                    Runs locally
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <section class="tool-workspace">
+
+        <div class="tool-container">
+
+            <div class="workspace-card">
+
+                <div class="workspace-toolbar">
+
+                    <div class="toolbar-left">
+
+                        <button type="button"
+                                class="action-button primary"
+                                @onclick="FormatJson">
+                            Format
+                        </button>
+
+                        <button type="button"
+                                class="action-button"
+                                @onclick="MinifyJson">
+                            Minify
+                        </button>
+
+                        <button type="button"
+                                class="action-button"
+                                @onclick="ValidateJson">
+                            Validate
+                        </button>
+
+                    </div>
+
+
+                    <div class="toolbar-right">
+
+                        <button type="button"
+                                class="small-button"
+                                @onclick="CopyJson">
+                            Copy
+                        </button>
+
+                        <button type="button"
+                                class="small-button"
+                                @onclick="PasteJson">
+                            Paste
+                        </button>
+
+
+                        <label class="small-button upload-button">
+
+                            Upload
+
+                            <InputFile OnChange="UploadJson"
+                                       accept=".json,application/json" />
+
+                        </label>
+
+
+                        <button type="button"
+                                class="small-button"
+                                @onclick="DownloadJson">
+                            Download
+                        </button>
+
+
+                        <div class="toolbar-divider"></div>
+
+
+                        <button type="button"
+                                class="small-button"
+                                @onclick="LoadSample">
+                            Sample
+                        </button>
+
+                        <button type="button"
+                                class="small-button danger-button"
+                                @onclick="Clear">
+                            Clear
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="editor-wrapper">
+
+                    <div class="editor-header">
+
+                        <div class="editor-title">
+                            JSON Input
+                        </div>
+
+                        <div class="editor-info">
+                            @CharacterCount.ToString("N0") characters
+                        </div>
+
+                    </div>
+
+
+                    <textarea class="json-editor"
+                              @bind="JsonInput"
+                              @bind:event="oninput"
+                              spellcheck="false"
+                              placeholder="{ &quot;name&quot;: &quot;Zaid&quot;, &quot;stack&quot;: &quot;.NET&quot; }">
+                    </textarea>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(StatusMessage))
+                {
+                    <div class="@StatusCssClass">
+                        <div class="status-icon">
+                            @(IsValid ? "✓" : "!")
+                        </div>
+
+                        <div>
+                            <strong>
+                                @(IsValid ? "Valid JSON" : "Invalid JSON")
+                            </strong>
+
+                            <span>
+                                @StatusMessage
+                            </span>
+                        </div>
+                    </div>
+                }
+
+            </div>
+            @if (ShowToast)
+            {
+                <div class="@ToastCssClass">
+                    <span class="toast-icon">
+                        @(ToastSuccess ? "✓" : "!")
+                    </span>
+
+                    @ToastMessage
+                </div>
+            }
+
+            <div class="tool-info-grid">
+
+                <div class="info-card">
+                    <span>01</span>
+
+                    <h3>Format JSON</h3>
+
+                    <p>
+                        Pretty-print JSON with consistent indentation
+                        for easier reading and debugging.
+                    </p>
+                </div>
+
+
+                <div class="info-card">
+                    <span>02</span>
+
+                    <h3>Validate</h3>
+
+                    <p>
+                        Detect malformed JSON and display useful
+                        parsing information.
+                    </p>
+                </div>
+
+
+                <div class="info-card">
+                    <span>03</span>
+
+                    <h3>Private by design</h3>
+
+                    <p>
+                        Processing happens inside your browser using
+                        WebAssembly. Nothing is uploaded.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+@code {
+
+    private string JsonInput { get; set; } = string.Empty;
+
+    private string StatusMessage { get; set; } = string.Empty;
+
+    private bool IsValid { get; set; }
+
+    private int CharacterCount => JsonInput?.Length ?? 0;
+    private bool ShowToast { get; set; }
+
+    private bool ToastSuccess { get; set; }
+
+    private string ToastMessage { get; set; } = string.Empty;
+
+    private CancellationTokenSource? _toastCancellation;
+
+
+    private string ToastCssClass =>
+        ToastSuccess
+            ? "tool-toast toast-success"
+            : "tool-toast toast-error";
+
+    private string StatusCssClass =>
+        IsValid
+            ? "status-message success"
+            : "status-message error";
+
+
+    private void FormatJson()
+    {
+        if (string.IsNullOrWhiteSpace(JsonInput))
+        {
+            SetError("Enter JSON before formatting.");
+            return;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(JsonInput);
+
+            JsonInput = JsonSerializer.Serialize(
+                document.RootElement,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+            SetSuccess("JSON formatted successfully.");
+        }
+        catch (JsonException ex)
+        {
+            SetJsonError(ex);
+        }
+    }
+
+
+    private void MinifyJson()
+    {
+        if (string.IsNullOrWhiteSpace(JsonInput))
+        {
+            SetError("Enter JSON before minifying.");
+            return;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(JsonInput);
+
+            JsonInput = JsonSerializer.Serialize(
+                document.RootElement);
+
+            SetSuccess("JSON minified successfully.");
+        }
+        catch (JsonException ex)
+        {
+            SetJsonError(ex);
+        }
+    }
+
+
+    private void ValidateJson()
+    {
+        if (string.IsNullOrWhiteSpace(JsonInput))
+        {
+            SetError("Enter JSON before validating.");
+            return;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(JsonInput);
+
+            SetSuccess("The JSON is valid.");
+        }
+        catch (JsonException ex)
+        {
+            SetJsonError(ex);
+        }
+    }
+
+
+    private void LoadSample()
+    {
+        JsonInput =
+"""
+{
+  "name": "Zaid MKA",
+  "role": "Software Engineer",
+  "technologies": [
+    ".NET",
+    "Blazor",
+    "PostgreSQL"
+  ],
+  "website": "zaidmka.com",
+  "active": true
+}
+""";
+
+        StatusMessage = string.Empty;
+    }
+
+
+    private void Clear()
+    {
+        JsonInput = string.Empty;
+
+        StatusMessage = string.Empty;
+
+        IsValid = false;
+    }
+
+
+    private void SetSuccess(string message)
+    {
+        IsValid = true;
+
+        StatusMessage = message;
+    }
+
+
+    private void SetError(string message)
+    {
+        IsValid = false;
+
+        StatusMessage = message;
+    }
+
+
+    private void SetJsonError(JsonException ex)
+    {
+        IsValid = false;
+
+        var line =
+            ex.LineNumber.HasValue
+                ? ex.LineNumber.Value + 1
+                : 0;
+
+        var position =
+            ex.BytePositionInLine.HasValue
+                ? ex.BytePositionInLine.Value + 1
+                : 0;
+
+        StatusMessage =
+            line > 0
+                ? $"Error near line {line}, position {position}. {ex.Message}"
+                : ex.Message;
+    }
+
+
+    private async Task CopyJson()
+    {
+        if (string.IsNullOrWhiteSpace(JsonInput))
+        {
+            await ShowToastMessage(
+                "Nothing to copy.",
+                false);
+
+            return;
+        }
+
+        var copied =
+            await JS.InvokeAsync<bool>(
+                "zaidTools.copyText",
+                JsonInput);
+
+        await ShowToastMessage(
+            copied
+                ? "JSON copied to clipboard."
+                : "Clipboard access was denied.",
+            copied);
+    }
+
+
+    private async Task PasteJson()
+    {
+        var value =
+            await JS.InvokeAsync<string?>(
+                "zaidTools.pasteText");
+
+        if (value is null)
+        {
+            await ShowToastMessage(
+                "Clipboard access was denied.",
+                false);
+
+            return;
+        }
+
+        JsonInput = value;
+
+        StatusMessage = string.Empty;
+
+        await ShowToastMessage(
+            "Clipboard content pasted.",
+            true);
+    }
+
+
+    private async Task UploadJson(
+        InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+
+            const long maxFileSize =
+                5 * 1024 * 1024;
+
+            if (file.Size > maxFileSize)
+            {
+                await ShowToastMessage(
+                    "Maximum file size is 5 MB.",
+                    false);
+
+                return;
+            }
+
+            await using var stream =
+                file.OpenReadStream(maxFileSize);
+
+            using var reader =
+                new StreamReader(stream);
+
+            JsonInput =
+                await reader.ReadToEndAsync();
+
+            StatusMessage =
+                string.Empty;
+
+            await ShowToastMessage(
+                $"{file.Name} loaded successfully.",
+                true);
+        }
+        catch
+        {
+            await ShowToastMessage(
+                "Could not read the selected file.",
+                false);
+        }
+    }
+
+
+    private async Task DownloadJson()
+    {
+        if (string.IsNullOrWhiteSpace(JsonInput))
+        {
+            await ShowToastMessage(
+                "Nothing to download.",
+                false);
+
+            return;
+        }
+
+        try
+        {
+            using var document =
+                JsonDocument.Parse(JsonInput);
+
+            var formatted =
+                JsonSerializer.Serialize(
+                    document.RootElement,
+                    new JsonSerializerOptions
+                    {
+                        WriteIndented = true
+                    });
+
+            await JS.InvokeVoidAsync(
+                "zaidTools.downloadText",
+                "formatted.json",
+                formatted,
+                "application/json");
+
+            await ShowToastMessage(
+                "JSON file downloaded.",
+                true);
+        }
+        catch (JsonException ex)
+        {
+            SetJsonError(ex);
+
+            await ShowToastMessage(
+                "Fix the JSON before downloading.",
+                false);
+        }
+    }
+
+
+    private async Task ShowToastMessage(
+        string message,
+        bool success)
+    {
+        _toastCancellation?.Cancel();
+
+        _toastCancellation =
+            new CancellationTokenSource();
+
+        var token =
+            _toastCancellation.Token;
+
+        ToastMessage = message;
+
+        ToastSuccess = success;
+
+        ShowToast = true;
+
+        try
+        {
+            await Task.Delay(
+                2500,
+                token);
+
+            ShowToast = false;
+        }
+        catch (TaskCanceledException)
+        {
+            // Another toast replaced this one.
+        }
+    }
+}

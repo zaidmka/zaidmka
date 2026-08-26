@@ -1,0 +1,888 @@
+﻿@page "/tools/document-composer"
+@rendermode InteractiveWebAssembly
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>Document Image Composer | Zaid MKA</PageTitle>
+
+<div class="composer-page">
+
+    <div class="page-header">
+        <div class="page-container header-inner">
+
+            <div>
+                <div class="breadcrumb">
+                    <a href="/">Home</a>
+                    <span>/</span>
+                    <a href="/tools">Tools</a>
+                    <span>/</span>
+                    <span>Document Composer</span>
+                </div>
+
+                <div class="title-row">
+
+                    <div class="title-icon">
+                        ▣
+                    </div>
+
+                    <div>
+                        <h1>Document Image Composer</h1>
+
+                        <p>
+                            Arrange document images automatically on a clean A4 page.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="privacy-card">
+                <div class="privacy-icon">⌾</div>
+
+                <div>
+                    <strong>Privacy first</strong>
+                    <span>Your images stay in your browser.</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="page-container composer-layout">
+
+        <!-- =========================
+             LEFT PANEL
+        ========================== -->
+
+        <aside class="control-panel">
+
+            <div class="panel-section">
+
+                <div class="section-title">
+                    <span class="number">01</span>
+
+                    <div>
+                        <h2>Upload Documents</h2>
+                        <p>ارفع صور المستمسكات المطلوبة فقط</p>
+                    </div>
+                </div>
+
+
+                @foreach (var document in Documents)
+                {
+                    <div class="@GetDocumentCardClass(document)">
+
+                        <div class="document-card-header">
+
+                            <div class="document-name">
+
+                                <div class="document-icon">
+                                    @document.ShortCode
+                                </div>
+
+                                <div class="document-title">
+                                    <span class="doc-ar" dir="rtl">@document.ArabicName</span>
+                                    <span class="doc-separator">—</span>
+                                    <span class="doc-en" dir="ltr">@document.EnglishName</span>
+                                </div>
+
+                            </div>
+
+                            @if (document.HasAnyImage)
+                            {
+                                <button type="button"
+                                        class="clear-document"
+                                        title="Clear document"
+                                        @onclick="() => ClearDocument(document)">
+                                    ×
+                                </button>
+                            }
+
+                        </div>
+
+
+                        <div class="side-upload-grid">
+
+                            <!-- FRONT -->
+                            <div class="@GetUploadClass(document.FrontImage)">
+
+                                @if (document.FrontImage is null)
+                                {
+                                    <label class="upload-label">
+
+                                        <InputFile OnChange="e => LoadImage(e, document, DocumentSide.Front)"
+                                                   accept="image/jpeg,image/png,image/webp" />
+
+                                        <div class="upload-symbol">↑</div>
+
+                                        <strong>Front</strong>
+
+                                        <span>الوجه</span>
+
+                                        <small>JPG / PNG / WEBP</small>
+
+                                    </label>
+                                }
+                                else
+                                {
+                                    <div class="uploaded-preview">
+
+                                        <img src="@document.FrontImage.DataUrl"
+                                             alt="@($"{document.EnglishName} front")" />
+
+                                        <div class="image-overlay">
+
+                                            <label class="replace-image">
+                                                Replace
+
+                                                <InputFile OnChange="e => LoadImage(e, document, DocumentSide.Front)"
+                                                           accept="image/jpeg,image/png,image/webp" />
+                                            </label>
+
+                                            <button type="button"
+                                                    @onclick="() => RemoveImage(document, DocumentSide.Front)">
+                                                Remove
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                            </div>
+
+
+                            <!-- BACK -->
+                            <div class="@GetUploadClass(document.BackImage)">
+
+                                @if (document.BackImage is null)
+                                {
+                                    <label class="upload-label">
+
+                                        <InputFile OnChange="e => LoadImage(e, document, DocumentSide.Back)"
+                                                   accept="image/jpeg,image/png,image/webp" />
+
+                                        <div class="upload-symbol">↑</div>
+
+                                        <strong>Back</strong>
+
+                                        <span>الظهر</span>
+
+                                        <small>JPG / PNG / WEBP</small>
+
+                                    </label>
+                                }
+                                else
+                                {
+                                    <div class="uploaded-preview">
+
+                                        <img src="@document.BackImage.DataUrl"
+                                             alt="@($"{document.EnglishName} back")" />
+
+                                        <div class="image-overlay">
+
+                                            <label class="replace-image">
+                                                Replace
+
+                                                <InputFile OnChange="e => LoadImage(e, document, DocumentSide.Back)"
+                                                           accept="image/jpeg,image/png,image/webp" />
+                                            </label>
+
+                                            <button type="button"
+                                                    @onclick="() => RemoveImage(document, DocumentSide.Back)">
+                                                Remove
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+
+            <!-- SETTINGS -->
+            <div class="panel-section">
+
+                <div class="section-title">
+                    <span class="number">02</span>
+
+                    <div>
+                        <h2>Layout Settings</h2>
+                        <p>إعدادات ترتيب صفحة الطباعة</p>
+                    </div>
+                </div>
+
+
+                <div class="setting-group">
+
+                    <label>Image arrangement</label>
+
+                    <div class="segmented-control">
+
+                        <button type="button"
+                                class="@(_layoutMode == LayoutMode.SideBySide ? "active" : "")"
+                                @onclick="() => _layoutMode = LayoutMode.SideBySide">
+
+                            <strong>Front / Back</strong>
+                            <span>الوجه والظهر جنباً إلى جنب</span>
+
+                        </button>
+
+                        <button type="button"
+                                class="@(_layoutMode == LayoutMode.Stacked ? "active" : "")"
+                                @onclick="() => _layoutMode = LayoutMode.Stacked">
+
+                            <strong>Top / Bottom</strong>
+                            <span>الوجه فوق والظهر تحت</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div class="setting-group">
+
+                        <label>Paper size</label>
+
+                        <div class="read-only-setting">
+                            <strong>A4</strong>
+                            <span>210 × 297 mm</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="setting-group">
+
+                        <label>Orientation</label>
+
+                        <div class="mini-toggle">
+
+                            <button type="button"
+                                    class="@(!_landscape ? "active" : "")"
+                                    @onclick="() => _landscape = false">
+                                Portrait
+                            </button>
+
+                            <button type="button"
+                                    class="@(_landscape ? "active" : "")"
+                                    @onclick="() => _landscape = true">
+                                Landscape
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="options-list">
+
+                    <label class="option-row">
+
+                        <input type="checkbox"
+                               @bind="_showLabels" />
+
+                        <span class="check-ui"></span>
+
+                        <div>
+                            <strong>Document labels</strong>
+                            <small>إظهار اسم المستمسك</small>
+                        </div>
+
+                    </label>
+
+
+                    <label class="option-row">
+
+                        <input type="checkbox"
+                               @bind="_showSideLabels" />
+
+                        <span class="check-ui"></span>
+
+                        <div>
+                            <strong>Front / Back labels</strong>
+                            <small>إظهار الوجه والظهر</small>
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="error-message">
+                    <span>!</span>
+                    @ErrorMessage
+                </div>
+            }
+
+
+            <button type="button"
+                    class="reset-button"
+                    disabled="@(!HasAnyDocument)"
+                    @onclick="ResetAll">
+
+                <span>↶</span>
+                Reset all
+
+            </button>
+
+        </aside>
+
+
+        <!-- =========================
+             A4 PREVIEW
+        ========================== -->
+
+        <main class="preview-area">
+
+            <div class="preview-heading">
+
+                <div>
+                    <span class="preview-label">
+                        LIVE PREVIEW
+                    </span>
+
+                    <h2>A4 Preview</h2>
+                    <p>معاينة مباشرة قبل الطباعة</p>
+                </div>
+
+                <div class="preview-meta">
+
+                    <span>
+                        @SelectedDocumentCount
+                        @(SelectedDocumentCount == 1 ? "document" : "documents")
+                    </span>
+
+                    <span class="meta-divider"></span>
+
+                    <span>
+                        @(_landscape ? "A4 Landscape" : "A4 Portrait")
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="paper-stage">
+
+                <div id="document-a4-preview"
+                     class="@GetPaperClass()">
+                    @if (!HasAnyDocument)
+                    {
+                        <div class="empty-paper">
+
+                            <div class="empty-icon">▣</div>
+
+                            <h3>Your A4 preview will appear here</h3>
+
+                            <p>
+                                Upload the front or back image of any document
+                                to start building your page.
+                            </p>
+
+                            <span>
+                                يمكنك رفع مستمسك واحد أو أكثر
+                            </span>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="@GetPaperContentClass()">
+
+                            @foreach (var document in SelectedDocuments)
+                            {
+                                <section class="paper-document">
+
+                                    @if (_showLabels)
+                                    {
+                                        <div class="paper-document-title">
+
+                                            <strong>
+                                                @document.ArabicName
+                                            </strong>
+
+                                            <span>
+                                                @document.EnglishName
+                                            </span>
+
+                                        </div>
+                                    }
+
+
+                                    <div class="@GetSidesClass()">
+
+                                        @if (document.FrontImage is not null)
+                                        {
+                                            <div class="paper-side">
+
+                                                @if (_showSideLabels)
+                                                {
+                                                    <div class="side-title">
+                                                        Front
+                                                        <span>الوجه</span>
+                                                    </div>
+                                                }
+
+                                                <div class="@GetImageFrameClass(document.FrontImage)">
+                                                    <img src="@document.FrontImage.DataUrl"
+                                                         alt="Front" />
+                                                </div>
+
+                                            </div>
+                                        }
+
+
+                                        @if (document.BackImage is not null)
+                                        {
+                                            <div class="paper-side">
+
+                                                @if (_showSideLabels)
+                                                {
+                                                    <div class="side-title">
+                                                        Back
+                                                        <span>الظهر</span>
+                                                    </div>
+                                                }
+
+                                                <div class="@GetImageFrameClass(document.BackImage)">
+                                                    <img src="@document.BackImage.DataUrl"
+                                                         alt="Back" />
+                                                </div>
+
+                                            </div>
+                                        }
+
+                                    </div>
+
+                                </section>
+                            }
+
+                        </div>
+                    }
+
+                    <div class="paper-footer">
+                        zaidmka.com • Document Image Composer
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="privacy-note">
+
+                <div class="privacy-note-icon">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Browser-only processing</strong>
+
+                    <p>
+                        Images are loaded directly into your browser.
+                        Nothing is uploaded or stored on the server.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="export-bar">
+
+                <div class="export-info">
+
+                    <strong>Ready for export</strong>
+
+                    <span>
+                        PNG and PDF export will be added in the next step.
+                    </span>
+
+                </div>
+
+
+                <div class="export-actions">
+
+                    <button type="button"
+                            disabled="@(!HasAnyDocument)"
+                            @onclick="DownloadPng">
+                        Download PNG
+                    </button>
+
+                    <button type="button"
+                            class="primary-export"
+                            disabled="@(!HasAnyDocument)"
+                            @onclick="DownloadPdf">
+                        Download PDF
+                    </button>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    private const long MaxImageSize =
+        12 * 1024 * 1024;
+
+    private readonly List<DocumentItem> Documents =
+    [
+        new()
+        {
+            Id = "national",
+            ArabicName = "البطاقة الوطنية الموحدة",
+            EnglishName = "National ID Card",
+            ShortCode = "ID"
+        },
+
+        new()
+        {
+            Id = "government",
+            ArabicName = "الهوية الحكومية",
+            EnglishName = "Government ID",
+            ShortCode = "GV"
+        },
+
+        new()
+        {
+            Id = "green-zone",
+            ArabicName = "هوية المنطقة الخضراء",
+            EnglishName = "Green Zone ID",
+            ShortCode = "GZ"
+        },
+
+        new()
+        {
+            Id = "residence",
+            ArabicName = "بطاقة السكن",
+            EnglishName = "Residence Card",
+            ShortCode = "RC"
+        }
+    ];
+
+
+    private LayoutMode _layoutMode =
+        LayoutMode.SideBySide;
+
+    private bool _landscape;
+
+    private bool _showLabels = true;
+
+    private bool _showSideLabels = true;
+
+    private string? ErrorMessage;
+
+
+    private IEnumerable<DocumentItem> SelectedDocuments =>
+        Documents.Where(x => x.HasAnyImage);
+
+
+    private bool HasAnyDocument =>
+        Documents.Any(x => x.HasAnyImage);
+
+
+    private int SelectedDocumentCount =>
+        Documents.Count(x => x.HasAnyImage);
+
+
+    private async Task LoadImage( InputFileChangeEventArgs e,  DocumentItem document,   DocumentSide side)
+    {
+        ErrorMessage = null;
+
+        try
+        {
+            var file = e.File;
+
+            if (file is null)
+            {
+                return;
+            }
+
+            if (!file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                ErrorMessage = "Please select a valid image file.";
+
+                return;
+            }
+
+            if (file.Size > MaxImageSize)
+            {
+                ErrorMessage =  "Image size must be 12 MB or less.";
+
+                return;
+            }
+
+            await using var stream =  file.OpenReadStream(MaxImageSize);
+
+            using var memoryStream =   new MemoryStream();
+
+            await stream.CopyToAsync(memoryStream);
+
+            var base64 =  Convert.ToBase64String( memoryStream.ToArray());
+
+            var image = new UploadedImage
+            {
+                FileName = file.Name,
+
+                DataUrl =  $"data:{file.ContentType};base64,{base64}"
+            };
+
+            var dimensions =  await JS.InvokeAsync<ImageDimensions>("zaidTools.getImageDimensions", image.DataUrl);
+
+            image.Width = dimensions.Width;
+            image.Height = dimensions.Height;
+            image.IsPortrait = dimensions.IsPortrait;
+
+            var crop = await JS.InvokeAsync<AutoCropResult>("zaidTools.autoCropDocument", image.DataUrl);
+
+            if (crop.Success)
+            {
+                image.DataUrl = crop.DataUrl;
+
+                image.Width = crop.Width;
+
+                image.Height = crop.Height;
+
+                image.IsPortrait =  crop.Height > crop.Width;
+            }
+
+
+
+
+            if (side == DocumentSide.Front)
+            {
+                document.FrontImage = image;
+            }
+            else
+            {
+                document.BackImage = image;
+            }
+        }
+        catch
+        {
+            ErrorMessage =
+                "The image could not be loaded.";
+        }
+    }
+
+    private sealed class ImageDimensions
+    {
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+        public bool IsPortrait { get; set; }
+    }
+
+    private void RemoveImage(
+        DocumentItem document,
+        DocumentSide side)
+    {
+        if (side == DocumentSide.Front)
+        {
+            document.FrontImage = null;
+        }
+        else
+        {
+            document.BackImage = null;
+        }
+    }
+
+    private string GetImageFrameClass(UploadedImage image)
+    {
+        return image.IsPortrait
+            ? "paper-image-frame portrait-image"
+            : "paper-image-frame landscape-image";
+    }
+    private void ClearDocument(
+        DocumentItem document)
+    {
+        document.FrontImage = null;
+
+        document.BackImage = null;
+    }
+
+
+    private void ResetAll()
+    {
+        foreach (var document in Documents)
+        {
+            document.FrontImage = null;
+
+            document.BackImage = null;
+        }
+
+        _layoutMode =
+            LayoutMode.SideBySide;
+
+        _landscape = false;
+
+        _showLabels = true;
+
+        _showSideLabels = true;
+
+        ErrorMessage = null;
+    }
+
+
+    private string GetDocumentCardClass(
+        DocumentItem document)
+    {
+        return document.HasAnyImage
+            ? "document-card has-images"
+            : "document-card";
+    }
+
+
+    private string GetUploadClass(
+        UploadedImage? image)
+    {
+        return image is null
+            ? "upload-box"
+            : "upload-box has-image";
+    }
+
+
+    private string GetPaperClass()
+    {
+        return _landscape
+            ? "a4-paper landscape"
+            : "a4-paper portrait";
+    }
+
+
+    private string GetPaperContentClass()
+    {
+        return SelectedDocumentCount switch
+        {
+            1 => "paper-content document-count-1",
+            2 => "paper-content document-count-2",
+            3 => "paper-content document-count-3",
+            _ => "paper-content document-count-4"
+        };
+    }
+
+    private sealed class AutoCropResult
+    {
+        public bool Success { get; set; }
+
+        public string DataUrl { get; set; } = string.Empty;
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+    }
+
+    private string GetSidesClass()
+    {
+        return _layoutMode ==
+               LayoutMode.SideBySide
+            ? "paper-sides side-by-side"
+            : "paper-sides stacked";
+    }
+
+
+    private sealed class DocumentItem
+    {
+        public string Id { get; set; } =
+            string.Empty;
+
+        public string ArabicName { get; set; } =
+            string.Empty;
+
+        public string EnglishName { get; set; } =
+            string.Empty;
+
+        public string ShortCode { get; set; } =
+            string.Empty;
+
+        public UploadedImage? FrontImage { get; set; }
+
+        public UploadedImage? BackImage { get; set; }
+
+        public bool HasAnyImage =>
+            FrontImage is not null ||
+            BackImage is not null;
+    }
+
+
+    private sealed class UploadedImage
+    {
+        public string FileName { get; set; } = string.Empty;
+
+        public string DataUrl { get; set; } = string.Empty;
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
+
+        public bool IsPortrait { get; set; }
+    }
+
+
+    private enum DocumentSide
+    {
+        Front,
+        Back
+    }
+
+
+    private enum LayoutMode
+    {
+        SideBySide,
+        Stacked
+    }
+
+    private async Task DownloadPng()
+    {
+        if (!HasAnyDocument)
+            return;
+
+        await JS.InvokeAsync<bool>(
+            "zaidTools.downloadElementAsPng",
+            "document-a4-preview",
+            "documents-a4.png");
+    }
+
+
+    private async Task DownloadPdf()
+    {
+        if (!HasAnyDocument)
+            return;
+
+        await JS.InvokeAsync<bool>(
+            "zaidTools.downloadElementAsPdf",
+            "document-a4-preview",
+            "documents-a4.pdf",
+            _landscape);
+    }
+}
