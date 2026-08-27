@@ -4,57 +4,143 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <base href="/" />
-    <title>Zaid MKA | Software Engineer</title>
 
-    <!-- Basic SEO -->
+    <!-- =====================================================
+         SEO
+    ====================================================== -->
+
+    <title>Zaid MKA | Software Engineer & .NET Developer</title>
+
     <meta name="description"
-          content="Zaid MKA - Software Engineer. Projects, developer tools and software solutions." />
+          content="Zaid MKA is a software engineer and .NET developer specializing in ASP.NET Core, Blazor, web applications, developer tools and software solutions." />
 
-    <!-- Open Graph -->
+    <meta name="robots" content="index, follow" />
+
+    <link rel="canonical"
+          href="https://zaidmka.com/" />
+
+
+    <!-- =====================================================
+         OPEN GRAPH
+         WhatsApp / Facebook / LinkedIn / Telegram
+    ====================================================== -->
+
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Zaid MKA | Software Engineer" />
+
+    <meta property="og:site_name" content="Zaid MKA" />
+
+    <meta property="og:title"  content="Zaid MKA | Software Engineer & .NET Developer" />
+
     <meta property="og:description"
           content="Software projects, developer tools and solutions by Zaid MKA." />
 
-    <meta property="og:url" content="https://zaidmka.com/" />
+    <meta property="og:url"
+          content="https://zaidmka.com/" />
 
     <meta property="og:image"
           content="https://zaidmka.com/images/og-cover.png" />
 
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image:secure_url"
+          content="https://zaidmka.com/images/og-cover.png" />
 
-    <!-- X / Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Zaid MKA | Software Engineer" />
+    <meta property="og:image:type"
+          content="image/png" />
+
+    <meta property="og:image:width"
+          content="1200" />
+
+    <meta property="og:image:height"
+          content="630" />
+
+    <meta property="og:image:alt"
+          content="Zaid MKA - Software Engineer and .NET Developer" />
+
+    <meta property="og:locale"
+          content="en_US" />
+
+
+    <!-- =====================================================
+         X / TWITTER
+    ====================================================== -->
+
+    <meta name="twitter:card"
+          content="summary_large_image" />
+
+    <meta name="twitter:title"
+          content="Zaid MKA | Software Engineer & .NET Developer" />
+
     <meta name="twitter:description"
           content="Software projects, developer tools and solutions by Zaid MKA." />
+
     <meta name="twitter:image"
           content="https://zaidmka.com/images/og-cover.png" />
 
+    <meta name="twitter:image:alt"
+          content="Zaid MKA - Software Engineer and .NET Developer" />
+
+
+    <!-- =====================================================
+         FONT - ZAIN
+    ====================================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Zain:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet" />
+
+
+    <!-- =====================================================
+         STYLES
+    ====================================================== -->
+
     <ResourcePreloader />
-    <link rel="stylesheet" href="lib/bootstrap-icons/bootstrap-icons.css" />
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["zaidmka.styles.css"]" />
+
+    <link rel="stylesheet"
+          href="lib/bootstrap-icons/bootstrap-icons.css" />
+
+    <link rel="stylesheet"
+          href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+
+    <link rel="stylesheet"
+          href="@Assets["app.css"]" />
+
+    <link rel="stylesheet"
+          href="@Assets["zaidmka.styles.css"]" />
+
     <ImportMap />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&family=Zain:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- =====================================================
+         FAVICON
+    ====================================================== -->
+
+    <link rel="icon"
+          type="image/png"
+          href="favicon.png" />
+
     <HeadOutlet />
+
 </head>
 
 <body>
+
     <Routes />
+
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+
     <script src="js/tools.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
 </body>
 
 </html>

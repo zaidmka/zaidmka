@@ -1,0 +1,455 @@
+﻿@page "/contact"
+
+<PageTitle>Contact | Zaid MKA</PageTitle>
+
+<div class="contact-page">
+
+    <!-- HERO -->
+    <section class="contact-hero">
+
+        <div class="hero-grid"></div>
+        <div class="hero-glow glow-1"></div>
+        <div class="hero-glow glow-2"></div>
+
+        <div class="contact-hero-content">
+
+            <div class="availability">
+                <span class="pulse-dot"></span>
+                AVAILABLE FOR COLLABORATION
+            </div>
+
+            <h1>
+                Have an idea?
+                <span>Let's build it.</span>
+            </h1>
+
+            <p>
+                سواء عندك مشروع، فكرة، تعاون تقني أو مجرد سؤال —
+                أرسل رسالة وخلينا نحچي.
+            </p>
+
+            <div class="hero-meta">
+
+                <div>
+                    <i class="bi bi-geo-alt"></i>
+
+                    <span>
+                        <small>LOCATION</small>
+                        Baghdad, Iraq
+                    </span>
+                </div>
+
+                <div>
+                    <i class="bi bi-clock"></i>
+
+                    <span>
+                        <small>RESPONSE</small>
+                        Usually within 24h
+                    </span>
+                </div>
+
+                <div>
+                    <i class="bi bi-code-slash"></i>
+
+                    <span>
+                        <small>FOCUS</small>
+                        .NET / Blazor / Web
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CODE CARD -->
+        <div class="hero-code">
+
+            <div class="code-window">
+
+                <div class="code-top">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                    <small>contact.cs</small>
+                </div>
+
+                <pre><code><span class="code-purple">public</span> <span class="code-blue">Task</span> Connect()
+{
+    <span class="code-purple">return</span> Build(
+        <span class="code-green">"something great"</span>
+    );
+}</code></pre>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MAIN -->
+    <section class="contact-main">
+
+        <!-- LEFT -->
+        <div class="contact-info">
+
+            <span class="section-kicker">
+                GET IN TOUCH
+            </span>
+
+            <h2>
+                خلينا نبدأ محادثة.
+            </h2>
+
+            <p class="intro">
+                إذا عندك فكرة مشروع، تعاون، استفسار تقني
+                أو تريد تناقش حل برمجي، تواصل وياي بالطريقة
+                اللي تناسبك.
+            </p>
+
+
+            <!-- EMAIL -->
+            <a href="mailto:YOUR_EMAIL"
+               class="contact-method">
+
+                <div class="method-icon email">
+                    <i class="bi bi-envelope"></i>
+                </div>
+
+                <div>
+                    <small>EMAIL</small>
+
+                    <strong>
+                        YOUR_EMAIL
+                    </strong>
+
+                    <span>
+                        أفضل طريقة للتواصل
+                    </span>
+                </div>
+
+                <i class="bi bi-arrow-up-left method-arrow"></i>
+
+            </a>
+
+
+            <!-- GITHUB -->
+            <a href="https://github.com/zaidmka"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="contact-method">
+
+                <div class="method-icon github">
+                    <i class="bi bi-github"></i>
+                </div>
+
+                <div>
+                    <small>GITHUB</small>
+
+                    <strong>
+                        @@zaidmka
+                    </strong>
+
+                    <span>
+                        المشاريع والكود
+                    </span>
+                </div>
+
+                <i class="bi bi-arrow-up-left method-arrow"></i>
+
+            </a>
+
+
+            <!-- LINKEDIN -->
+            <a href="#"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="contact-method">
+
+                <div class="method-icon linkedin">
+                    <i class="bi bi-linkedin"></i>
+                </div>
+
+                <div>
+                    <small>LINKEDIN</small>
+
+                    <strong>
+                        Zaid MKA
+                    </strong>
+
+                    <span>
+                        Professional network
+                    </span>
+                </div>
+
+                <i class="bi bi-arrow-up-left method-arrow"></i>
+
+            </a>
+
+
+            <div class="contact-note">
+
+                <i class="bi bi-shield-check"></i>
+
+                <div>
+                    <strong>
+                        Privacy first.
+                    </strong>
+
+                    <span>
+                        معلومات التواصل تستخدم فقط للرد على رسالتك.
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT / FORM -->
+        <div class="contact-form-card">
+
+            <div class="form-head">
+
+                <div>
+                    <span>
+                        SEND A MESSAGE
+                    </span>
+
+                    <h3>
+                        خلينا نحچي عن فكرتك
+                    </h3>
+
+                    <p>
+                        أرسل التفاصيل، وأنا أراجع الرسالة وأرد عليك.
+                    </p>
+                </div>
+
+                <div class="form-icon">
+                    <i class="bi bi-send"></i>
+                </div>
+
+            </div>
+
+
+            <EditForm Model="@Contact"
+                      OnValidSubmit="SendMessage">
+
+                <DataAnnotationsValidator />
+
+                <div class="form-grid">
+
+                    <!-- NAME -->
+                    <div class="field-group">
+
+                        <label>
+                            <i class="bi bi-person"></i>
+                            الاسم
+                        </label>
+
+                        <InputText @bind-Value="Contact.Name"
+                                   class="contact-input"
+                                   placeholder="اسمك" />
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="field-group">
+
+                        <label>
+                            <i class="bi bi-envelope"></i>
+                            البريد الإلكتروني
+                        </label>
+
+                        <InputText @bind-Value="Contact.Email"
+                                   type="email"
+                                   class="contact-input"
+                                   placeholder="name@example.com" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUBJECT -->
+                <div class="field-group">
+
+                    <label>
+                        <i class="bi bi-chat-square-text"></i>
+                        نوع الرسالة
+                    </label>
+
+                    <InputSelect @bind-Value="Contact.Subject"
+                                 class="contact-select">
+
+                        <option value="">
+                            اختر نوع الرسالة
+                        </option>
+
+                        <option value="Project">
+                            مشروع جديد
+                        </option>
+
+                        <option value="Collaboration">
+                            تعاون
+                        </option>
+
+                        <option value="Technical">
+                            استفسار تقني
+                        </option>
+
+                        <option value="Other">
+                            أخرى
+                        </option>
+
+                    </InputSelect>
+
+                </div>
+
+
+                <!-- MESSAGE -->
+                <div class="field-group">
+
+                    <label>
+                        <i class="bi bi-pencil-square"></i>
+                        الرسالة
+                    </label>
+
+                    <InputTextArea @bind-Value="Contact.Message"
+                                   class="contact-textarea"
+                                   placeholder="احچيلي عن المشروع أو الفكرة..."
+                                   rows="7" />
+
+                </div>
+
+
+                <!-- FOOTER -->
+                <div class="form-footer">
+
+                    <div class="form-hint">
+                        <i class="bi bi-shield-check"></i>
+                        معلوماتك تستخدم فقط للتواصل معك.
+                    </div>
+
+                    <button type="submit"
+                            class="send-button"
+                            disabled="@IsSending">
+
+                        @if (IsSending)
+                        {
+                            <span class="spinner-border spinner-border-sm"></span>
+
+                            <span>
+                                جاري الإرسال...
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                إرسال الرسالة
+                            </span>
+
+                            <i class="bi bi-send-fill"></i>
+                        }
+
+                    </button>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(StatusMessage))
+                {
+                    <div class="form-status">
+
+                        <i class="bi bi-check-circle-fill"></i>
+
+                        <span>
+                            @StatusMessage
+                        </span>
+
+                    </div>
+                }
+
+            </EditForm>
+
+        </div>
+
+    </section>
+
+
+    <!-- BOTTOM -->
+    <section class="contact-bottom">
+
+        <div class="bottom-symbol">
+            &lt;/&gt;
+        </div>
+
+        <div>
+            <span>
+                ZAID MKA
+            </span>
+
+            <h3>
+                Good ideas deserve good code.
+            </h3>
+        </div>
+
+        <a href="/projects">
+
+            Explore my work
+
+            <i class="bi bi-arrow-left"></i>
+
+        </a>
+
+    </section>
+
+</div>
+
+
+@code {
+
+    private ContactFormModel Contact = new();
+
+    private bool IsSending;
+
+    private string? StatusMessage;
+
+
+    private async Task SendMessage()
+    {
+        IsSending = true;
+        StatusMessage = null;
+
+        try
+        {
+            await Task.Delay(800);
+
+            StatusMessage =
+                "تم استلام رسالتك بنجاح.";
+
+            Contact =
+                new ContactFormModel();
+        }
+        finally
+        {
+            IsSending = false;
+        }
+    }
+
+
+    public class ContactFormModel
+    {
+        public string? Name { get; set; }
+
+        public string? Email { get; set; }
+
+        public string? Subject { get; set; }
+
+        public string? Message { get; set; }
+    }
+
+}
