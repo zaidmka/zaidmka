@@ -85,8 +85,6 @@
 
                                 <div class="document-title">
                                     <span class="doc-ar" dir="rtl">@document.ArabicName</span>
-                                    <span class="doc-separator">—</span>
-                                    <span class="doc-en" dir="ltr">@document.EnglishName</span>
                                 </div>
 
                             </div>
@@ -421,12 +419,8 @@
                                         <div class="paper-document-title">
 
                                             <strong>
-                                                @document.ArabicName
+                                              @document.EnglishName - @document.ArabicName
                                             </strong>
-
-                                            <span>
-                                                @document.EnglishName
-                                            </span>
 
                                         </div>
                                     }
@@ -438,15 +432,7 @@
                                         {
                                             <div class="paper-side">
 
-                                                @if (_showSideLabels)
-                                                {
-                                                    <div class="side-title">
-                                                        Front
-                                                        <span>الوجه</span>
-                                                    </div>
-                                                }
-
-                                                <div class="@GetImageFrameClass(document.FrontImage)">
+                                               <div class="@GetImageFrameClass(document.FrontImage)">
                                                     <img src="@document.FrontImage.DataUrl"
                                                          alt="Front" />
                                                 </div>
@@ -458,15 +444,7 @@
                                         @if (document.BackImage is not null)
                                         {
                                             <div class="paper-side">
-
-                                                @if (_showSideLabels)
-                                                {
-                                                    <div class="side-title">
-                                                        Back
-                                                        <span>الظهر</span>
-                                                    </div>
-                                                }
-
+                                                                                               
                                                 <div class="@GetImageFrameClass(document.BackImage)">
                                                     <img src="@document.BackImage.DataUrl"
                                                          alt="Back" />
@@ -838,14 +816,15 @@
     private sealed class UploadedImage
     {
         public string FileName { get; set; } = string.Empty;
-
         public string DataUrl { get; set; } = string.Empty;
+        public string OriginalDataUrl { get; set; } = string.Empty;
 
         public int Width { get; set; }
-
         public int Height { get; set; }
 
         public bool IsPortrait { get; set; }
+        public bool IsCropped { get; set; }
+        public bool IsCropping { get; set; }
     }
 
 

@@ -660,13 +660,13 @@
 }
 
     .a4-paper.portrait {
-        width: min(100%, 710px);
-        aspect-ratio: 210 / 297;
+        width: 21cm;
+        height: 29.7cm;
     }
 
     .a4-paper.landscape {
-        width: min(100%, 900px);
-        aspect-ratio: 297 / 210;
+        width: 29.7cm;
+        height: 21cm;
     }
 
 
@@ -722,57 +722,67 @@
 /* =========================================
    A4 CONTENT
 ========================================= */
-
 .paper-content {
     height: 100%;
-    display: grid;
-    padding: 10px 20px 10px 20px;
-    gap: 5px;
-    align-content: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 4% 6% 6%;
+    gap: 6px;
+    justify-content: flex-start;
+    box-sizing: border-box;
 }
 
 .document-count-1 {
-    grid-template-rows: auto;
+    transform: scale(1);
+    transform-origin: top center;
 }
 
 .document-count-2 {
-    grid-template-rows: repeat(2, minmax(0,1fr));
+    transform: scale(.95);
+    transform-origin: top center;
 }
 
 .document-count-3 {
-    grid-template-rows: repeat(3, minmax(0,1fr));
+    transform: scale(.88);
+    transform-origin: top center;
 }
 
 .document-count-4 {
-    grid-template-rows: repeat(4, minmax(0,1fr));
+    transform: scale(.88);
+    transform-origin: top center;
 }
 
 .paper-document {
-    min-height: 0;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     border-bottom: 1px dashed #e2e8f0;
-    padding-bottom: 1.5%;
+    padding: 0 0 6px;
+    margin: 0;
 }
 
     .paper-document:last-child {
         border-bottom: 0;
     }
+    .paper-document:last-child {
+        border-bottom: 0;
+    }
 
 .paper-document-title {
-    margin-bottom: 1.5%;
+    margin: 0 0 3px;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
+    line-height: 1;
 }
 
     .paper-document-title strong {
         font-family: "Zain", sans-serif;
         color: #0f172a;
-        font-size: clamp(.65rem, 1vw, .9rem);
-        line-height: 1.2;
+        font-size: .72rem;
+        line-height: 1.1;
     }
 
     .paper-document-title span {
@@ -837,34 +847,6 @@
     }
 
 
-/* one document can be larger */
-
-.document-count-1 .paper-document {
-    max-width: 92%;
-    width: 100%;
-    margin: auto;
-}
-
-.document-count-1 .paper-image-frame img {
-    max-height: 350px;
-}
-
-
-/* tighter when four */
-
-.document-count-4 .paper-document-title {
-    margin-bottom: .5%;
-}
-
-.document-count-4 .paper-image-frame {
-    max-height: 150px;
-}
-
-.document-count-4 .paper-image-frame img {
-    max-height: 145px;
-    max-width: 100%;
-    }
-
 
 /* =========================================
    PAPER FOOTER
@@ -876,8 +858,7 @@
     right: 0;
     bottom: 2.5%;
     text-align: center;
-    color: #cbd5e1;
-    font-size: clamp(.35rem, .5vw, .48rem);
+    font-size: 12px;
 }
 
 
@@ -1098,28 +1079,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: auto;
     overflow: hidden;
-    border-radius: 3px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
+    border: 0;
+    background: transparent;
+    margin: 0 auto;
+    padding: 0;
 }
 
     .paper-image-frame img {
         display: block;
-        max-width: 100%;
-        max-height: 100%;
         width: auto;
         height: auto;
         object-fit: contain;
     }
 
-    .paper-image-frame.portrait-image {
-        max-width: 55%;
-        margin: auto;
+
+    /* الصورة الطولية */
+    .paper-image-frame.portrait-image img {
+        height: 8cm;
+        width: 5.5cm;
     }
 
-    .paper-image-frame.landscape-image {
-        max-width: 100%;
+
+    /* الصورة العرضية */
+    .paper-image-frame.landscape-image img {
+        height: 6cm;
+        width: 8cm;
     }
 
 .document-title {

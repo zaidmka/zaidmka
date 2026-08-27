@@ -1,0 +1,425 @@
+﻿@page "/tools/crop-test"
+@rendermode InteractiveWebAssembly
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JS
+
+<PageTitle>Crop Test | Zaid MKA</PageTitle>
+
+<div class="crop-test-page">
+
+    <div class="crop-container">
+
+        <div class="crop-header">
+
+            <div>
+                <span class="eyebrow">EXPERIMENTAL TOOL</span>
+                <h1>Document Auto Crop Test</h1>
+                <p>
+                    Upload one document image and compare the original
+                    with the OpenCV crop result.
+                </p>
+            </div>
+
+            <div class="privacy-badge">
+                Browser only
+            </div>
+
+        </div>
+
+
+        <div class="upload-panel">
+
+            <label class="upload-box">
+
+                <InputFile OnChange="LoadImage"
+                           accept="image/jpeg,image/png,image/webp" />
+
+                <span class="upload-icon">↑</span>
+
+                <strong>Upload image</strong>
+
+                <small>JPG / PNG / WEBP — max 12 MB</small>
+
+            </label>
+
+        </div>
+
+
+        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+        {
+            <div class="message error">
+                @ErrorMessage
+            </div>
+        }
+
+
+        @if (!string.IsNullOrWhiteSpace(OriginalDataUrl))
+        {
+            <div class="actions">
+
+                <button type="button"
+                        class="primary-button"
+                        disabled="@IsProcessing"
+                        @onclick="RunAutoCrop">
+
+                    @(IsProcessing ? "Detecting..." : "Auto Detect & Crop")
+
+                </button>
+
+                <button type="button"
+                        class="secondary-button"
+                        disabled="@IsProcessing"
+                        @onclick="Reset">
+
+                    Reset
+
+                </button>
+
+            </div>
+
+
+            <div class="compare-grid">
+
+                <section class="preview-card">
+
+                    <div class="preview-title">
+
+                        <div>
+                            <span>ORIGINAL</span>
+                            <h2>Uploaded Image</h2>
+                        </div>
+
+                        <div class="dimensions">
+                            @OriginalWidth × @OriginalHeight
+                        </div>
+
+                    </div>
+
+
+                    <div class="image-stage">
+
+                        <img src="@OriginalDataUrl"
+                             alt="Original uploaded image" />
+
+                    </div>
+
+                </section>
+
+
+                <section class="preview-card">
+
+                    <div class="preview-title">
+
+                        <div>
+                            <span>RESULT</span>
+                            <h2>Detected Document</h2>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(ResultDataUrl))
+                        {
+                            <div class="dimensions">
+                                @ResultWidth × @ResultHeight
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <div class="image-stage result-stage">
+
+                        @if (IsProcessing)
+                        {
+                            <div class="processing-state">
+
+                                <div class="loader"></div>
+
+                                <strong>Analyzing image...</strong>
+
+                                <span>
+                                    OpenCV is looking for a document rectangle.
+                                </span>
+
+                            </div>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(ResultDataUrl))
+                        {
+                            <img src="@ResultDataUrl"
+                                 alt="Auto cropped result" />
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+
+                                <span class="empty-icon">▱</span>
+
+                                <strong>No result yet</strong>
+
+                                <p>
+                                    Press Auto Detect & Crop to analyze the image.
+                                </p>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <div class="debug-panel">
+
+                <div class="debug-head">
+                    <span>DETECTION INFO</span>
+                </div>
+
+                <div class="debug-grid">
+
+                    <div>
+                        <span>Status</span>
+
+                        <strong class="@StatusClass">
+                            @StatusText
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Original</span>
+
+                        <strong>
+                            @OriginalWidth × @OriginalHeight
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Result</span>
+
+                        <strong>
+                            @(ResultWidth > 0 ? $"{ResultWidth} × {ResultHeight}" : "—")
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Result orientation</span>
+
+                        <strong>
+                            @ResultOrientation
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                @if (!string.IsNullOrWhiteSpace(DetectionMessage))
+                {
+                    <div class="detection-message">
+                        @DetectionMessage
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+
+@code {
+    private const long MaxImageSize = 12 * 1024 * 1024;
+
+    private string OriginalDataUrl { get; set; } = string.Empty;
+    private string ResultDataUrl { get; set; } = string.Empty;
+
+    private int OriginalWidth { get; set; }
+    private int OriginalHeight { get; set; }
+
+    private int ResultWidth { get; set; }
+    private int ResultHeight { get; set; }
+
+    private bool IsProcessing { get; set; }
+    private bool CropSucceeded { get; set; }
+
+    private string ErrorMessage { get; set; } = string.Empty;
+    private string DetectionMessage { get; set; } = string.Empty;
+    private string DetectionMethod { get; set; } = "—";
+    private string StatusText
+    {
+        get
+        {
+            if (IsProcessing)
+                return "Processing";
+
+            if (CropSucceeded)
+                return "Success";
+
+            if (!string.IsNullOrWhiteSpace(DetectionMessage))
+                return "Failed";
+
+            return "Waiting";
+        }
+    }
+
+    private string StatusClass
+    {
+        get
+        {
+            if (CropSucceeded)
+                return "status-success";
+
+            if (!string.IsNullOrWhiteSpace(DetectionMessage))
+                return "status-error";
+
+            return string.Empty;
+        }
+    }
+
+    private string ResultOrientation
+    {
+        get
+        {
+            if (ResultWidth == 0 || ResultHeight == 0)
+                return "—";
+
+            return ResultHeight > ResultWidth ? "Portrait" : "Landscape";
+        }
+    }
+
+
+    private async Task LoadImage(InputFileChangeEventArgs e)
+    {
+        Reset();
+
+        try
+        {
+            var file = e.File;
+
+            if (file is null)
+                return;
+
+            if (!file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                ErrorMessage = "Please select a valid image.";
+                return;
+            }
+
+            if (file.Size > MaxImageSize)
+            {
+                ErrorMessage = "Maximum image size is 12 MB.";
+                return;
+            }
+
+            await using var stream = file.OpenReadStream(MaxImageSize);
+            using var memoryStream = new MemoryStream();
+
+            await stream.CopyToAsync(memoryStream);
+
+            var base64 = Convert.ToBase64String(memoryStream.ToArray());
+
+            OriginalDataUrl = $"data:{file.ContentType};base64,{base64}";
+
+            var dimensions = await JS.InvokeAsync<ImageDimensions>(
+                "zaidTools.getImageDimensions",
+                OriginalDataUrl);
+
+            OriginalWidth = dimensions.Width;
+            OriginalHeight = dimensions.Height;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Could not load image: {ex.Message}";
+        }
+    }
+
+
+    private async Task RunAutoCrop()
+    {
+        if (string.IsNullOrWhiteSpace(OriginalDataUrl) || IsProcessing)
+            return;
+
+        ErrorMessage = string.Empty;
+        DetectionMessage = string.Empty;
+
+        ResultDataUrl = string.Empty;
+        ResultWidth = 0;
+        ResultHeight = 0;
+
+        CropSucceeded = false;
+        IsProcessing = true;
+
+        try
+        {
+            var result = await JS.InvokeAsync<AutoCropResult>(
+                "zaidTools.autoCropDocumentOpenCv",
+                OriginalDataUrl);
+
+            if (!result.Success || string.IsNullOrWhiteSpace(result.DataUrl))
+            {
+                DetectionMessage = result.Reason ?? "No document rectangle was detected.";
+                return;
+            }
+
+            ResultDataUrl = result.DataUrl;
+            ResultWidth = result.Width;
+            ResultHeight = result.Height;
+            DetectionMethod = result.Method ?? "—";
+
+            CropSucceeded = true;
+            DetectionMessage = "Document detected and perspective crop completed.";
+        }
+        catch (Exception ex)
+        {
+            DetectionMessage = $"OpenCV error: {ex.Message}";
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+
+
+    private void Reset()
+    {
+        OriginalDataUrl = string.Empty;
+        ResultDataUrl = string.Empty;
+
+        OriginalWidth = 0;
+        OriginalHeight = 0;
+
+        ResultWidth = 0;
+        ResultHeight = 0;
+
+        IsProcessing = false;
+        CropSucceeded = false;
+
+        ErrorMessage = string.Empty;
+        DetectionMessage = string.Empty;
+
+        DetectionMethod = "—";
+    }
+
+
+    private sealed class ImageDimensions
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public bool IsPortrait { get; set; }
+    }
+
+
+    private sealed class AutoCropResult
+    {
+        public bool Success { get; set; }
+        public string? DataUrl { get; set; }
+
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public string? Reason { get; set; }
+        public string? Method { get; set; }
+    }
+}
