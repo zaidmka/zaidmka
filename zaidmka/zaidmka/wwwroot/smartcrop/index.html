@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>Smart Document Crop | zaidmka.com</title><style>*{box-sizing:border-box}body{font:15px Tahoma,Arial;background:#f3f5f9;color:#19263b;margin:0}.wrap{max-width:1200px;margin:20px auto;padding:12px}h1{margin:0}p,.muted{color:#637086}.panel{background:#fff;border:1px solid #dfe5ee;border-radius:15px;padding:16px;margin:14px 0}.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}button,.upload{border:1px solid #c9d3e1;border-radius:9px;padding:10px 13px;background:#fff;font:inherit;cursor:pointer}.primary,.upload{background:#155fd1;color:white;border-color:#155fd1}button:disabled{opacity:.45}input[type=file]{display:none}.stage{overflow:auto;background:#e8edf5;border-radius:12px;padding:10px}#canvas{display:block;max-width:none;width:100%;height:auto;margin:auto;touch-action:none;cursor:crosshair}#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.result{padding:10px;background:#f5f7fa;border-radius:10px;border:1px solid #dfe5ee}.result img{width:100%;height:190px;object-fit:contain;background:white}.result a{display:inline-block;padding:8px;color:#155fd1}.enhance-switch{display:inline-flex;align-items:center;gap:7px;border:1px solid #b7d8c7;border-radius:9px;padding:10px;background:#effaf3;color:#17633e;font-weight:bold}.enhance-switch input{display:inline;accent-color:#16814b;width:17px;height:17px}.sidecompare{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0}.sidecompare figure{margin:0;min-width:0}.sidecompare img{width:100%;height:130px;object-fit:contain;background:#fff;border:1px solid #dfe5ee}.sidecompare figcaption{text-align:center;font-size:12px;font-weight:bold;padding:4px}.compare{display:flex;gap:6px;margin:7px 0}.compare button{flex:1;font-size:12px;padding:7px}.compare button.active{background:#155fd1;color:white}.status{font-weight:bold;color:#157347}.small{font-size:13px}label{cursor:pointer}
+
+:root{color-scheme:light;--primary:#2563eb;--ink:#172339;--muted:#718096;--stroke:#e5eaf1}
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;color:var(--ink);font:14px/1.65 system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;direction:rtl}
+.wrap{max-width:1720px;margin:auto;padding:28px clamp(16px,3vw,48px) 50px}
+.app-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:0 0 20px;border-bottom:1px solid #e1e6ee}
+.brand{display:flex;gap:15px;align-items:center}.brand-logo{display:grid;place-items:center;width:54px;height:54px;border-radius:17px;background:#2563eb;color:#fff;font-size:30px;box-shadow:0 9px 20px #2563eb30}
+.eyebrow,.section-eyebrow{font-size:10px;letter-spacing:1.6px;font-weight:800;color:#7b8ba6;direction:ltr;text-align:right}
+.app-header h1{font-size:clamp(23px,2.6vw,32px);line-height:1.25;margin:4px 0 0;letter-spacing:-.7px;font-weight:800}
+.privacy-chip{background:#e9f8f1;color:#08734e;padding:9px 13px;border-radius:100px;font-size:12px;font-weight:700;white-space:nowrap}
+.intro{margin:17px 0 23px;color:#6c7b90;font-size:14px}
+.app-layout{display:grid;grid-template-columns:285px minmax(0,1fr);gap:22px;align-items:start}
+.sidebar,.editor-card,.results-card{background:#fff;border:1px solid #e3e8f0;border-radius:20px;box-shadow:0 8px 25px #1e293b08}
+.sidebar{padding:20px;position:sticky;top:16px;display:flex;flex-direction:column;gap:0}
+.control-group{padding:17px 0;border-bottom:1px solid #edf0f5}.control-group:first-child{padding-top:0}.control-group:last-child{border-bottom:0;padding-bottom:0}
+.group-title{font-weight:800;font-size:13px;color:#1c2a41}.group-desc{color:#8490a2;font-size:11px;margin:3px 0 12px}
+.control-stack{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,.upload,.enhance-switch{border-radius:11px;min-height:41px;padding:9px 12px;font-size:12px;font-family:inherit;font-weight:700;line-height:1.5;border:1px solid #e0e6ef;background:#f8fafc;color:#32445f;cursor:pointer;transition:background .15s,border-color .15s,transform .15s;flex:1 1 auto;text-align:center}
+button:hover:not(:disabled),.upload:hover{background:#edf4ff;border-color:#afc9fb;color:#1d55b7}
+button:active:not(:disabled){transform:scale(.98)}button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,.upload:focus-visible{outline:3px solid #a5c5ff;outline-offset:2px}
+.upload-group .upload{background:#eef4ff;border:1px dashed #9dbafa;color:#1d56c5;padding:13px 8px}
+#detect,#crop{background:#2563eb;border-color:#2563eb;color:white;flex-basis:100%;box-shadow:0 5px 12px #2563eb22}
+#detect:hover:not(:disabled),#crop:hover:not(:disabled){background:#1d4ed8;color:white}
+#crop{background:#0f8768;border-color:#0f8768;box-shadow:0 5px 12px #0f876822}
+#crop:hover:not(:disabled){background:#0c745a}
+#remove{color:#b84c54;background:#fff7f7}
+#zoomlabel{display:inline-flex;justify-content:center;align-items:center;background:#f1f5fa;border-radius:10px;font-weight:800;font-size:12px;min-height:41px;min-width:54px}
+.enhance-switch{display:flex;align-items:center;justify-content:center;gap:8px;background:#effbf6;color:#11724e;border-color:#ccebdc;cursor:pointer}
+.enhance-switch input{accent-color:#0f8768}
+#downloadall{background:#f0f5ff;color:#2458bc}
+.workspace{display:grid;gap:20px;min-width:0}
+.editor-card,.results-card{padding:22px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
+.section-heading h2,.results-card h3{font-size:19px;font-weight:800;margin:4px 0 0}
+#status{display:inline-flex;background:#eff8f5;color:#157657;border:1px solid #d2eee2;border-radius:9px;padding:6px 12px;font-size:12px;font-weight:700;margin:0 0 12px}
+.editor-card .small.muted{color:#8290a4;font-size:12px;line-height:1.9;margin:0 0 17px}
+.stage{background:radial-gradient(ellipse at 50% 20%,#29384d,#111c2d 75%);border:1px solid #25364c;border-radius:14px;min-height:370px;max-height:70vh;overflow:auto;padding:20px;display:flex;justify-content:center;align-items:flex-start}
+#canvas{max-width:none;box-shadow:0 15px 38px #0005;border-radius:4px}
+.results-card .section-eyebrow{margin-bottom:5px}
+#results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:13px;margin-top:14px;color:#7d899b}
+.result{background:#f8fafc;border:1px solid #e3e9f1;border-radius:12px;padding:12px}
+.result img{max-width:100%;border-radius:7px;background:#fff}
+.result a{color:#245ac5;text-decoration:none;font-weight:700}
+.footnote{color:#8994a5;font-size:11px;margin:20px 4px;line-height:1.8}
+@media(max-width:950px){.app-layout{grid-template-columns:1fr}.sidebar{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}.control-group:nth-child(2){padding-top:0}.control-group:nth-child(3){border-bottom:0}.stage{min-height:250px}}
+@media(max-width:600px){.wrap{padding:14px 10px 35px}.app-header{align-items:flex-start}.privacy-chip{font-size:0;padding:9px}.privacy-chip:after{content:"✓";font-size:15px}.brand-logo{width:42px;height:42px;font-size:23px}.app-header h1{font-size:22px}.sidebar{display:block;padding:16px}.control-group{padding:13px 0}.control-group:nth-child(2){padding-top:13px}.control-group:nth-child(3){border-bottom:1px solid #edf0f5}.editor-card,.results-card{padding:13px;border-radius:15px}.stage{padding:8px;min-height:200px}.section-heading h2,.results-card h3{font-size:17px}.intro{font-size:12px}}
+</style><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><style>
+/* V7 Mobile-first polish. JS and crop engine are unchanged. */
+body,button,.upload,.enhance-switch{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif!important}
+body{background:#f6f8fc}
+.wrap{max-width:1600px}
+.brand-logo{background:linear-gradient(140deg,#4b7bf2,#1949bb);box-shadow:0 8px 22px #245bdf26}
+.app-header h1{letter-spacing:0}
+.eyebrow,.section-eyebrow{font-family:system-ui,Arial,sans-serif!important}
+.sidebar{gap:0}
+.control-group{min-width:0}
+.upload-group .control-stack{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.upload-group .control-stack input[type=file]{display:none}
+.upload-group .upload{display:flex;align-items:center;justify-content:center;min-height:55px;white-space:nowrap}
+.enhance-switch{width:100%;flex:1 0 100%;font-size:12px;justify-content:flex-start;padding:11px 12px}
+.control-stack button{white-space:normal}
+#zoomlabel{min-width:56px}
+#results:empty:before{content:"بعد القص، تظهر المستمسكات هنا";display:block;color:#8794a7;font-size:13px}
+@media(max-width:950px){
+ .wrap{padding:14px 14px 34px}
+ .app-layout{gap:12px}
+ .sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;padding:16px;position:static}
+ .control-group{padding:12px 0!important;border-bottom:1px solid #edf0f5!important}
+ .control-group:nth-last-child(-n+2){border-bottom:0!important}
+ .stage{max-height:62vh;min-height:220px}
+}
+@media(max-width:640px){
+ html,body{width:100%;max-width:100%;overflow-x:hidden}
+ .wrap{padding:12px 10px 30px}
+ .app-header{padding-bottom:12px;gap:8px}
+ .brand{gap:10px;min-width:0}
+ .brand-logo{width:40px;height:40px;flex:0 0 40px;border-radius:12px}
+ .app-header h1{font-size:20px;line-height:1.45}
+ .eyebrow{font-size:9px;letter-spacing:.7px}
+ .privacy-chip{padding:7px 10px;flex:0 0 auto}
+ .intro{margin:12px 0 15px;font-size:12px}
+ .app-layout{display:flex;flex-direction:column;gap:12px}
+ .workspace{display:contents}
+ .sidebar{order:1;display:flex;flex-direction:column;width:100%;padding:14px;gap:0;border-radius:17px}
+ .editor-card{order:2;width:100%}
+ .results-card{order:3;width:100%}
+ .control-group{padding:11px 0!important;border-bottom:1px solid #edf0f5!important}
+ .control-group:last-child{border-bottom:0!important;padding-bottom:0!important}
+ .control-group:first-child{padding-top:0!important}
+ .group-title{font-size:12px}
+ .group-desc{font-size:11px;margin-bottom:8px}
+ .control-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .control-stack>*{min-width:0;width:100%;margin:0}
+ .control-stack button{min-height:45px;font-size:12px;padding:9px 7px}
+ .upload-group .control-stack{grid-template-columns:1fr 1fr}
+ .upload-group .upload{font-size:12px;padding:10px 4px}
+ #detect,#crop,.enhance-switch,#downloadall{grid-column:1/-1}
+ #zoomlabel{display:flex;min-height:45px}
+ .section-heading h2,.results-card h3{font-size:16px}
+ .editor-card,.results-card{padding:13px;border-radius:17px}
+ .editor-card .small.muted{font-size:11px}
+ .stage{width:100%;min-height:180px;max-height:65vh;padding:8px;overflow:auto;border-radius:11px}
+ #canvas{display:block;max-width:100%;height:auto;width:100%;touch-action:none}
+ #results{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .result{padding:8px;min-width:0}
+ .result img{height:130px}
+ .sidecompare{grid-template-columns:1fr;gap:5px}
+ .sidecompare img{height:110px}
+}
+@media(max-width:360px){
+ #results{grid-template-columns:1fr}
+ .privacy-chip{display:none}
+ .app-header h1{font-size:19px}
+}
+</style><style>
+.collection-card{background:white;border:1px solid #e3e8f0;border-radius:20px;padding:22px;box-shadow:0 8px 25px #1e293b08;min-width:0}
+.collection-head,.a4-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.collection-head h2{font-size:19px;margin:4px 0;font-weight:800}.collection-head h2 span{background:#e9f1ff;color:#2055b9;padding:1px 9px;border-radius:20px;font-size:13px}
+.collection-head p,.a4-controls small{display:block;font-size:12px;color:#7b899b;margin:5px 0}
+.collection-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin:17px 0 24px}
+.collection-empty{grid-column:1/-1;background:#f7f9fd;border:1px dashed #cfd9e8;border-radius:12px;padding:24px;text-align:center;color:#8795a8}
+.collection-item{min-width:0;border:1px solid #e0e8f3;border-radius:12px;padding:9px;background:#f9fbff;display:flex;flex-direction:column;gap:7px;cursor:grab}
+.collection-item.dragging{opacity:.45}.collection-item img{width:100%;height:105px;object-fit:contain;background:white;border-radius:7px}
+.collection-item strong{font-size:12px}.collection-item .item-actions{display:flex;gap:5px}.collection-item button{min-height:33px;padding:5px 7px;font-size:11px}
+.batch-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.batch-actions button,.next-photo,.a4-actions button{display:inline-flex;justify-content:center;align-items:center;padding:10px 15px;border-radius:11px;border:1px solid #dbe4f2;background:#f1f6ff;color:#2456b8;font-size:13px;font-weight:700;cursor:pointer;min-height:43px}
+#add-to-collection{background:#0f8768;border-color:#0f8768;color:white}
+#add-to-collection:disabled{opacity:.4;cursor:not-allowed}
+.danger-ghost{color:#a44b50!important;background:#fff5f5!important;border:1px solid #f5d3d3!important}
+.a4-controls{border-top:1px solid #e7edf5;padding-top:17px}.a4-actions{display:flex;gap:7px;flex-wrap:wrap}
+.a4-actions .primary-action{background:#2563eb;color:white;border-color:#2563eb}
+.a4-preview-wrap{background:#e9edf5;padding:22px 12px;border-radius:14px;display:flex;justify-content:center;margin-top:15px;overflow:auto}
+#a4-preview{width:min(100%,510px);height:auto;aspect-ratio:210/297;background:white;box-shadow:0 10px 32px #1d293b24}
+@media(max-width:640px){.collection-card{padding:13px;border-radius:17px}.collection-head h2{font-size:17px}.collection-items{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.batch-actions>*{flex:1 1 100%;text-align:center}.a4-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.a4-actions button:first-child{grid-column:1/-1}.a4-actions button{font-size:11px;padding:9px 6px}.a4-preview-wrap{padding:12px 8px}}
+
+.item-sizing{background:#fff;border:1px solid #e4eaf3;border-radius:9px;padding:8px 9px;display:grid;gap:5px}
+.size-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px;color:#53647e;font-weight:700}
+.size-row span{font-variant-numeric:tabular-nums;color:#1d55bb}
+.item-sizing input[type=range]{width:100%;accent-color:#2563eb;cursor:pointer;touch-action:pan-x}
+@media(max-width:640px){.item-sizing{padding:7px}.size-row{font-size:10px}}
+
+.item-sizing{background:#fff;border:1px solid #e4eaf3;border-radius:9px;padding:8px 9px;display:grid;gap:5px}
+.size-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11px;color:#53647e;font-weight:700}
+.size-row span{font-variant-numeric:tabular-nums;color:#1d55bb}
+.item-sizing input[type=range]{width:100%;accent-color:#2563eb;cursor:pointer;touch-action:pan-x}
+@media(max-width:640px){.item-sizing{padding:7px}.size-row{font-size:10px}}
+</style><style>
+/* V8.1 — mobile A4 preview is a compact, opt-in panel. The A4 canvas and exports remain 794x1123. */
+.mobile-preview-header{display:none}
+#a4-preview-panel{scrollbar-width:thin}
+#toggle-a4-preview{font-family:inherit;font-size:13px;font-weight:750;border-radius:11px;background:#eaf1ff;color:#2156b5;border:1px solid #cbdcf9;min-height:42px;padding:9px 14px;cursor:pointer}
+@media(max-width:700px){
+ html,body{max-width:100%;overflow-x:hidden}
+ .wrap{padding:12px 10px 35px}
+ .collection-card{width:100%;min-width:0;padding:14px 12px!important}
+ .collection-head{display:flex;align-items:flex-start;gap:8px}
+ .collection-head h2{font-size:17px;line-height:1.55}
+ .collection-head p{font-size:11px;line-height:1.7}
+ .collection-head .danger-ghost{font-size:11px;min-height:36px;padding:7px 9px;flex:0 0 auto}
+ .collection-items{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .collection-items>*{min-width:0;max-width:100%}
+ .item-sizing{padding:9px 6px}
+ .size-row{font-size:11px}
+ .item-sizing input[type=range]{width:100%;max-width:100%;accent-color:#2563eb}
+ .a4-controls{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding-top:14px;margin-top:16px}
+ .a4-controls strong{font-size:14px}
+ .a4-controls small{font-size:11px;line-height:1.7}
+ .a4-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+ .a4-actions button{font-size:12px;min-height:44px;padding:10px 6px;white-space:normal}
+ .a4-actions #reset-order{grid-column:1/-1;background:#f6f8fc}
+ .a4-actions #save-a4,.a4-actions #print-a4{grid-column:auto}
+ .mobile-preview-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:15px;background:#f5f8fd;border:1px solid #e3eaf5;padding:11px;border-radius:13px}
+ .mobile-preview-label{display:flex;flex-direction:column;gap:2px;min-width:0}
+ .mobile-preview-label strong{font-size:13px}
+ .mobile-preview-label small{font-size:10px;color:#7a8799;line-height:1.4}
+ #toggle-a4-preview{flex:0 0 auto;font-size:11px;padding:9px;min-height:38px}
+ #a4-preview-panel{display:none;margin-top:8px;padding:12px 9px;background:#e8edf5;border-radius:13px;overflow:hidden}
+ #a4-preview-panel.is-open{display:flex;justify-content:center;align-items:flex-start}
+ #a4-preview{width:min(100%,330px)!important;max-width:100%;height:auto!important;aspect-ratio:794/1123;flex:none;box-shadow:0 6px 20px #1d293b20}
+}
+@media(max-width:380px){.collection-items{grid-template-columns:1fr}.mobile-preview-label small{font-size:9px}}
+
+.site-rights{margin:22px 0 0;padding:17px 12px;border-top:1px solid #e1e6ee;display:flex;justify-content:space-between;align-items:center;gap:8px;color:#78869a;font:500 12px system-ui,Arial,sans-serif;flex-wrap:wrap}
+.site-rights a{color:#255fcf;text-decoration:none;font-weight:750}.site-rights a:hover{text-decoration:underline}
+@media(max-width:640px){.site-rights{justify-content:center;text-align:center;flex-direction:column;gap:4px;font-size:11px}}
+</style><style>
+/* Smart Crop V9 — genuine mobile workflow; desktop layout preserved */
+@media (max-width:700px){
+ html{scroll-behavior:smooth;scroll-padding-top:14px}
+ body{background:#f3f6fb!important;font-size:14px!important}
+ .wrap{padding:12px 12px 36px!important;width:100%;max-width:100%;}
+ .app-header{padding:6px 2px 13px!important;align-items:center!important}
+ .brand-logo{width:42px!important;height:42px!important;flex:0 0 42px;font-size:23px!important}
+ .app-header h1{font-size:19px!important;line-height:1.3!important}
+ .eyebrow{font-size:9px!important;letter-spacing:.5px!important}
+ .privacy-chip{font-size:0!important;padding:7px 9px!important}
+ .privacy-chip:after{content:'✓';font-size:15px!important}
+ .intro{font-size:12px!important;line-height:1.8;margin:10px 3px 14px!important}
+ .app-layout{display:flex!important;flex-direction:column!important;gap:12px!important}
+ .sidebar,.workspace{display:contents!important}
+ .control-group,.editor-card,.results-card,.collection-card{order:5;min-width:0!important;width:100%!important;background:white!important;border:1px solid #e2e8f1!important;border-radius:18px!important;box-shadow:0 3px 18px #1723390b!important;padding:15px!important;margin:0!important}
+ .sidebar>.control-group{border-bottom:1px solid #e2e8f1!important}
+ .upload-group{order:1!important;border-color:#b7d0ff!important;background:linear-gradient(160deg,#fff,#f5f9ff)!important}
+ .editor-card{order:2!important}
+ .sidebar>.control-group:nth-child(2){order:3!important}
+ .sidebar>.control-group:nth-child(3){order:4!important}
+ .sidebar>.control-group:nth-child(4){order:5!important}
+ .results-card{order:6!important}
+ .collection-card{order:7!important}
+ .group-title{font-size:15px!important;font-weight:800!important;color:#14253d}
+ .group-desc{font-size:12px!important;line-height:1.6;margin:4px 0 11px!important}
+ .control-stack{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+ .control-stack>button,.control-stack>.upload,.control-stack>.enhance-switch{width:100%!important;min-height:49px!important;font-size:13px!important;padding:10px 8px!important;white-space:normal!important;border-radius:12px!important;line-height:1.5!important}
+ .upload-group .upload{min-height:66px!important;font-size:14px!important;font-weight:800!important}
+ #detect,#crop,#downloadall,.enhance-switch{grid-column:1/-1!important}
+ #detect,#crop{min-height:53px!important;font-size:14px!important}
+ #zoomlabel{width:100%!important;min-width:0!important;min-height:49px!important}
+ .section-heading{margin-bottom:8px!important}
+ .section-heading h2,.results-card h3{font-size:17px!important}
+ #status{font-size:12px!important;line-height:1.7!important;display:block!important;width:100%;margin:10px 0!important}
+ .editor-card .small.muted{font-size:11px!important;line-height:1.7!important;margin:0 0 12px!important}
+ .stage{padding:6px!important;min-height:150px!important;max-height:none!important;overflow:auto!important;border-radius:12px!important;display:block!important;overscroll-behavior:contain}
+ #canvas{max-width:none!important;width:100%;height:auto;touch-action:none!important;margin:0 auto!important}
+ #results{grid-template-columns:1fr!important;gap:12px!important}
+ .result{padding:12px!important}
+ .result img{height:180px!important;object-fit:contain}
+ .sidecompare{grid-template-columns:1fr 1fr!important}
+ .sidecompare img{height:110px!important}
+ .batch-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important}
+ .batch-actions>*{width:100%!important;min-height:52px!important;font-size:13px!important}
+ .collection-head{align-items:flex-start!important}
+ .collection-head h2{font-size:17px!important}
+ .collection-head p{font-size:12px!important}
+ .collection-items{grid-template-columns:1fr!important;gap:11px!important;margin:14px 0!important}
+ .collection-item{display:grid!important;grid-template-columns:96px minmax(0,1fr)!important;gap:8px 12px!important;padding:11px!important;cursor:default!important}
+ .collection-item>img{grid-column:1!important;grid-row:1/4!important;height:105px!important;width:96px!important;object-fit:contain!important}
+ .collection-item>strong{grid-column:2!important;font-size:13px!important;align-self:end}
+ .collection-item>.item-sizing{grid-column:2!important;padding:6px!important}
+ .collection-item>.item-actions{grid-column:2!important;display:grid!important;grid-template-columns:1fr 1fr 1.4fr!important;gap:5px!important}
+ .collection-item>.item-actions button{min-height:37px!important;font-size:12px!important;padding:5px!important}
+ .item-sizing input[type=range]{min-height:26px!important}
+ .a4-actions{grid-template-columns:1fr 1fr!important}
+ .a4-actions button{min-height:51px!important;font-size:12px!important}
+ .mobile-preview-header{margin-top:12px!important}
+ .site-rights{padding-bottom:18px!important}
+}
+@media(max-width:350px){.collection-item{grid-template-columns:76px minmax(0,1fr)!important}.collection-item>img{width:76px!important}.app-header h1{font-size:17px!important}}
+</style><style>@media(min-width:701px){.mobile-step-tag{display:none}}@media(max-width:700px){.mobile-step-tag{display:block;color:#2563eb;font-size:11px;font-weight:800;margin:0 0 9px;letter-spacing:.1px}}</style></head><body><main class="wrap"><header class="app-header"><div class="brand"><div class="brand-logo">▣</div><div><div class="eyebrow">ZAID MKA  /  DOCUMENT TOOLS</div><h1>Smart Document Scanner</h1></div></div><span class="privacy-chip">●  معالجة محلية وآمنة</span></header><p class="intro">قص المستمسكات بدقة، عدّل الحدود بسهولة، وراجع النتائج قبل ترتيبها على A4.</p><div class="app-layout"><section class="sidebar"><div class="control-group upload-group"><div class="mobile-step-tag">الخطوة ١ · اختر الصورة</div><div class="group-title">01  |  إدخال الصورة</div><div class="group-desc">اختر صورة من الجهاز أو افتح الكاميرا</div><div class="control-stack"><input accept="image/*" id="file" type="file"/><input accept="image/*" capture="environment" id="camera" type="file"/><label class="upload" for="file">📁 رفع صورة</label><label class="upload" for="camera">📷 الكاميرا</label></div></div><div class="control-group"><div class="group-title">02  |  تحديد المستمسكات</div><div class="group-desc">اكتشاف تلقائي مع إمكانية التعديل اليدوي</div><div class="control-stack"><button disabled="" id="detect">🔎 اكتشاف تلقائي</button><button disabled="" id="add">＋ إضافة مستمسك</button><button disabled="" id="remove">حذف المحدد</button></div></div><div class="control-group"><div class="group-title">03  |  عرض وتحرير</div><div class="group-desc">كبّر الصورة وعدّل الحدود بكل دقة</div><div class="control-stack"><button disabled="" id="undo">↶ تراجع</button><button disabled="" id="redo">↷ إعادة</button><button disabled="" id="zoomout">−</button><span id="zoomlabel">100%</span><button disabled="" id="zoomin">＋ تكبير</button><button disabled="" id="zoomreset">إعادة الحجم</button></div></div><div class="control-group export-group"><div class="group-title">04  |  تجهيز النتائج</div><div class="group-desc">قص المستمسكات واحتفظ بالنتائج</div><div class="control-stack"><label class="enhance-switch"><input checked="" id="enhance" type="checkbox"/> ✨ تحسين تلقائي</label><button class="primary" disabled="" id="crop">✂ قص الكل</button><button disabled="" id="downloadall">⬇ تحميل الكل ZIP</button></div></div></section><div class="workspace"><section class="editor-card"><div class="mobile-step-tag">الخطوة ٢ · راجع حدود المستمسك</div><div class="section-heading"><div><div class="section-eyebrow">EDITOR / WORKSPACE</div><h2>مساحة القص والتحديد</h2></div></div><p class="status" id="status">ارفع صورة حتى نبدأ.</p><p class="small muted">اسحب أي ركن لتعديل زاوية واحدة، أو اسحب نقطة منتصف الضلع لتحريك الخط كاملاً، أو اسحب داخل الإطار لتحريك المستمسك كله. اضغط إضافة مستمسك إذا فات الاكتشاف واحد. استخدم التكبير والتراجع لضبط الإطارات. الاكتشاف لا يفترض ٤ مستمسكات أو ترتيباً ثابتاً.</p><div class="stage"><canvas height="180" id="canvas" width="800"></canvas></div></section><section class="results-card"><div class="mobile-step-tag">الخطوة ٤ · راجع الصور المقصوصة</div><div class="section-eyebrow">OUTPUT / RESULTS</div><h3>المستمسكات المقصوصة</h3><div class="muted" id="results">تظهر النتائج هنا بعد القص، مع إمكانية المقارنة بين الأصل والتحسين.</div><div class="batch-actions"><button disabled="" id="add-to-collection" type="button">＋ إضافة النتائج للمجموعة</button><label class="next-photo" for="next-photo-input">＋ قص صورة ثانية<input accept="image/*" hidden="" id="next-photo-input" type="file"/></label></div></section><section class="collection-card"><div class="mobile-step-tag">الخطوة ٥ · رتّب واطبع</div><div class="collection-head"><div><div class="section-eyebrow">COLLECTION / A4 COMPOSER</div><h2>مجموعة المستمسكات <span id="collection-count">0</span></h2><p>اجمع المستمسكات من عدة صور، وعدّل حجم كل صورة وترتيبها بالأسهم، ثم احفظ ورقة A4.</p></div><button class="danger-ghost" id="clear-collection" type="button">مسح المجموعة</button></div><div class="collection-items" id="collection-items"><div class="collection-empty">بعد القص، اضغط «إضافة للمجموعة» حتى تظهر مستمسكاتك هنا.</div></div><div class="a4-controls"><div><strong>معاينة ورقة A4</strong><small>ترتيب تلقائي مع شريط تحكم بحجم كل مستمسك، دون تشويه الأبعاد</small></div><div class="a4-actions"><button id="reset-order" type="button">إعادة الترتيب</button><button class="primary-action" id="save-a4" type="button">تحميل A4 PNG</button><button class="primary-action" id="print-a4" type="button">طباعة / حفظ PDF</button></div></div><div class="mobile-preview-header"><div class="mobile-preview-label"><strong>معاينة الورقة</strong><small>افتحها فقط عندما تريد مراجعة ترتيب A4</small></div><button aria-controls="a4-preview-panel" aria-expanded="false" id="toggle-a4-preview" type="button">عرض المعاينة  ▾</button></div><div class="a4-preview-wrap" id="a4-preview-panel"><canvas aria-label="معاينة ورقة A4" height="1123" id="a4-preview" width="794"></canvas></div></section></div></div><p class="footnote">التحسين محافظ ولا يسترجع التفاصيل المفقودة؛ احتفظ بالأصل وراجع الحروف والأختام. نسخة إثبات فكرة: تعتمد على تجميع مناطق المحتوى وفلترة الأجزاء الداخلية، وقد تفشل عند تداخل المستمسكات أو غياب الحدود. راجع الأختام والأطراف قبل الحفظ. صورك لا تُرفع إلى أي خادم.</p><footer class="site-rights" dir="ltr"><span>© 2026 <a href="https://zaidmka.com" rel="noopener noreferrer" target="_blank">zaidmka.com</a></span><span>All rights reserved · Smart Crop</span></footer></main><script>
+const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');let img=null,quads=[],sel=-1,drag=null,urls=[],exportsList=[],zoom=1,history=[],future=[];
+function snapshot(){return quads.map(q=>q.map(p=>[...p]))}function commit(){history.push(snapshot());if(history.length>80)history.shift();future=[];historyButtons()}function historyButtons(){$('undo').disabled=!history.length;$('redo').disabled=!future.length}function restore(state){quads=state;sel=-1;redraw();historyButtons()}
+$('undo').onclick=()=>{if(!history.length)return;future.push(snapshot());restore(history.pop())};$('redo').onclick=()=>{if(!future.length)return;history.push(snapshot());restore(future.pop())};function applyZoom(){canvas.style.width=(zoom*100)+'%';$('zoomlabel').textContent=Math.round(zoom*100)+'%'}$('zoomin').onclick=()=>{zoom=Math.min(4,Math.round((zoom+.25)*100)/100);applyZoom()};$('zoomout').onclick=()=>{zoom=Math.max(.5,Math.round((zoom-.25)*100)/100);applyZoom()};$('zoomreset').onclick=()=>{zoom=1;applyZoom()};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));const quad=(x,y,w,h)=>[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+function redraw(){ctx.clearRect(0,0,canvas.width,canvas.height);if(!img){ctx.fillStyle='#697a90';ctx.textAlign='center';ctx.font='18px Tahoma';ctx.fillText('ارفع صورة للبدء',400,90);return}ctx.drawImage(img,0,0);quads.forEach((q,i)=>{ctx.beginPath();q.forEach((p,j)=>j?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.strokeStyle=i===sel?'#08a46d':'#ef7800';ctx.lineWidth=Math.max(2,canvas.width/420);ctx.stroke();ctx.fillStyle=i===sel?'#08a46d':'#ef7800';ctx.fillRect(q[0][0],q[0][1],32,27);ctx.fillStyle='white';ctx.font='bold 18px Arial';ctx.textAlign='center';ctx.fillText(i+1,q[0][0]+16,q[0][1]+19);q.forEach(p=>{ctx.beginPath();ctx.arc(...p,Math.max(7,canvas.width/150),0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.stroke()});for(let j=0;j<4;j++){let a=q[j],b=q[(j+1)%4],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,r=Math.max(8,canvas.width/130);ctx.fillStyle='#fff';ctx.fillRect(mx-r,my-r,r*2,r*2);ctx.strokeRect(mx-r,my-r,r*2,r*2)}})}
+function detect(){
+ if(!img)return;commit();
+ const W=img.naturalWidth,H=img.naturalHeight,scale=Math.min(1,1100/Math.max(W,H));
+ const w=Math.round(W*scale),h=Math.round(H*scale),c=document.createElement('canvas');c.width=w;c.height=h;
+ const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(img,0,0,w,h);
+ const data=g.getImageData(0,0,w,h).data, mask=new Uint8Array(w*h);
+ // Estimate white background, preserving colored ink and pale document backgrounds.
+ for(let i=0;i<w*h;i++){let k=i*4,r=data[k],gg=data[k+1],b=data[k+2];mask[i]=(Math.min(r,gg,b)<222 || Math.max(r,gg,b)-Math.min(r,gg,b)>22)?1:0}
+ // Low-resolution occupancy map: bridge text/photographs belonging to one document.
+ const cell=Math.max(3,Math.round(Math.min(w,h)/155)),gw=Math.ceil(w/cell),gh=Math.ceil(h/cell),occ=new Uint8Array(gw*gh);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(mask[y*w+x])occ[Math.floor(y/cell)*gw+Math.floor(x/cell)]++;
+ const bin=new Uint8Array(gw*gh);for(let i=0;i<bin.length;i++)bin[i]=occ[i]>=Math.max(2,cell*cell*.12)?1:0;
+ // Connected regions after modest closing; no fixed document count.
+ function dilate(src,rx,ry){let out=new Uint8Array(src.length);for(let y=0;y<gh;y++)for(let x=0;x<gw;x++)if(src[y*gw+x])for(let yy=Math.max(0,y-ry);yy<=Math.min(gh-1,y+ry);yy++)for(let xx=Math.max(0,x-rx);xx<=Math.min(gw-1,x+rx);xx++)out[yy*gw+xx]=1;return out}
+ function erode(src,rx,ry){let out=new Uint8Array(src.length);for(let y=0;y<gh;y++)for(let x=0;x<gw;x++){let good=true;for(let yy=Math.max(0,y-ry);yy<=Math.min(gh-1,y+ry)&&good;yy++)for(let xx=Math.max(0,x-rx);xx<=Math.min(gw-1,x+rx);xx++)if(!src[yy*gw+xx]){good=false;break}out[y*gw+x]=good?1:0}return out}
+ let closed=erode(dilate(bin,2,2),2,2),seen=new Uint8Array(gw*gh),regions=[];
+ for(let i=0;i<closed.length;i++){if(!closed[i]||seen[i])continue;let queue=[i],head=0;seen[i]=1;let x0=gw,y0=gh,x1=0,y1=0,n=0;
+ while(head<queue.length){let v=queue[head++],x=v%gw,y=(v/gw)|0;n++;x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);
+ for(let z of [v-1,v+1,v-gw,v+gw])if(z>=0&&z<closed.length&&!seen[z]&&closed[z]&&Math.abs(z%gw-x)+Math.abs(((z/gw)|0)-y)===1){seen[z]=1;queue.push(z)}}
+ if(n>=Math.max(15,gw*gh*.0018))regions.push({x:x0*cell,y:y0*cell,w:Math.min(w,(x1+1)*cell)-x0*cell,h:Math.min(h,(y1+1)*cell)-y0*cell});}
+ // Merge nearby fragments, but only when their combined outline resembles a document.
+ function union(a,b){let x=Math.min(a.x,b.x),y=Math.min(a.y,b.y),r=Math.max(a.x+a.w,b.x+b.w),bt=Math.max(a.y+a.h,b.y+b.h);return {x,y,w:r-x,h:bt-y}}
+ function overlap1(a0,a1,b0,b1){return Math.max(0,Math.min(a1,b1)-Math.max(a0,b0))}
+ const gap=Math.max(7,Math.round(Math.min(w,h)*.018));
+ let changed=true,round=0;
+ while(changed&&round++<12){changed=false;outer:for(let i=0;i<regions.length;i++)for(let j=i+1;j<regions.length;j++){
+ let a=regions[i],b=regions[j],xo=overlap1(a.x,a.x+a.w,b.x,b.x+b.w),yo=overlap1(a.y,a.y+a.h,b.y,b.y+b.h),dx=Math.max(0,Math.max(a.x-b.x-b.w,b.x-a.x-a.w)),dy=Math.max(0,Math.max(a.y-b.y-b.h,b.y-a.y-a.h));
+ let contained=(xo*yo)/Math.max(1,Math.min(a.w*a.h,b.w*b.h))>.78;
+ let alignedVertical=dx<=gap&&yo/Math.max(1,Math.min(a.h,b.h))>.55;
+ let alignedHorizontal=dy<=gap&&xo/Math.max(1,Math.min(a.w,b.w))>.55;
+ if(contained||alignedVertical||alignedHorizontal){let u=union(a,b),ratio=u.w/u.h;if(ratio>.38&&ratio<4.2){regions[i]=u;regions.splice(j,1);changed=true;break outer}}}}
+ // Conservative candidate filter: remove isolated text and internal portrait boxes.
+ regions=regions.filter(r=>r.w>=w*.14&&r.h>=h*.105&&r.w*r.h>=w*h*.018);
+ // Remove contained duplicates, and keep a small safe margin.
+ regions.sort((a,b)=>b.w*b.h-a.w*a.h);let accepted=[];
+ for(let r of regions){let duplicate=accepted.some(a=>{let x=overlap1(a.x,a.x+a.w,r.x,r.x+r.w),y=overlap1(a.y,a.y+a.h,r.y,r.y+r.h);return x*y/Math.max(1,r.w*r.h)>.7});if(!duplicate)accepted.push(r)}
+ let pad=Math.max(5,Math.round(Math.min(w,h)*.012));
+ accepted=accepted.map(r=>{let x=Math.max(0,r.x-pad),y=Math.max(0,r.y-pad),right=Math.min(w,r.x+r.w+pad),bottom=Math.min(h,r.y+r.h+pad);return {x,y,w:right-x,h:bottom-y}});
+ // If fragmented detection fails, use a single full-page candidate rather than 15 bad boxes.
+ if(!accepted.length)accepted=[{x:0,y:0,w,h}];
+ accepted.sort((a,b)=>{let rowTolerance=Math.min(a.h,b.h)*.4;return Math.abs(a.y-b.y)<rowTolerance?b.x-a.x:a.y-b.y});
+ quads=accepted.map(r=>quad(r.x/scale,r.y/scale,r.w/scale,r.h/scale));sel=-1;
+ $('status').textContent=`اكتشفنا ${quads.length} منطقة محتملة. راجع الحدود، وأضف أي مستمسك ناقص.`;
+ redraw();
+}
+function loadFile(f){if(!f)return;const url=URL.createObjectURL(f),im=new Image();im.onload=()=>{img=im;canvas.width=im.naturalWidth;canvas.height=im.naturalHeight;URL.revokeObjectURL(url);['detect','add','remove','crop','zoomin','zoomout','zoomreset'].forEach(id=>$(id).disabled=false);quads=[];history=[];future=[];historyButtons();zoom=1;applyZoom();detect()};im.onerror=()=>{$('status').textContent='تعذر فتح الصورة';URL.revokeObjectURL(url)};im.src=url};$('file').onchange=e=>loadFile(e.target.files[0]);$('camera').onchange=e=>loadFile(e.target.files[0]);$('detect').onclick=detect;$('add').onclick=()=>{commit();let w=canvas.width,h=canvas.height;quads.push(quad(w*.3,h*.3,w*.4,h*.4));sel=quads.length-1;redraw()};$('remove').onclick=()=>{if(sel>=0){commit();quads.splice(sel,1);sel=-1;redraw()}};
+function pointer(e){let b=canvas.getBoundingClientRect();return[(e.clientX-b.left)*canvas.width/b.width,(e.clientY-b.top)*canvas.height/b.height]};function inside(p,q){let sign=0;for(let i=0;i<4;i++){let a=q[i],b=q[(i+1)%4],cross=(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]);if(Math.abs(cross)<.01)continue;let s=Math.sign(cross);if(sign&&s!==sign)return false;sign=s}return true}
+function segDist(p,a,b){let dx=b[0]-a[0],dy=b[1]-a[1],t=clamp(((p[0]-a[0])*dx+(p[1]-a[1])*dy)/Math.max(1,dx*dx+dy*dy),0,1);return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy)}
+function hitTest(p){let hit=Math.max(15,Math.min(canvas.width,canvas.height)/55);for(let i=quads.length-1;i>=0;i--){let q=quads[i];for(let j=0;j<4;j++)if(Math.hypot(p[0]-q[j][0],p[1]-q[j][1])<hit)return {i,mode:'corner',j};for(let j=0;j<4;j++){let a=q[j],b=q[(j+1)%4],m=[(a[0]+b[0])/2,(a[1]+b[1])/2];if(Math.hypot(p[0]-m[0],p[1]-m[1])<hit*1.2||segDist(p,a,b)<hit*.7)return {i,mode:'edge',j}}if(inside(p,q))return {i,mode:'move',j:-1}}return null}
+canvas.onpointerdown=e=>{if(!img)return;let p=pointer(e),hit=hitTest(p);if(hit){sel=hit.i;commit();drag={mode:hit.mode,j:hit.j,p,old:quads[sel].map(v=>[...v])};canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing'}else{sel=-1;drag=null}redraw()};
+canvas.onpointermove=e=>{let p=pointer(e);if(!drag){let hit=hitTest(p);canvas.style.cursor=hit?(hit.mode==='move'?'move':hit.mode==='corner'?'crosshair':'grab'):'crosshair';return}let dx=p[0]-drag.p[0],dy=p[1]-drag.p[1],q=quads[sel];if(drag.mode==='corner'){q[drag.j]=[clamp(drag.old[drag.j][0]+dx,0,canvas.width),clamp(drag.old[drag.j][1]+dy,0,canvas.height)]}else if(drag.mode==='edge'){for(let j of [drag.j,(drag.j+1)%4])q[j]=[clamp(drag.old[j][0]+dx,0,canvas.width),clamp(drag.old[j][1]+dy,0,canvas.height)]}else{let minX=Math.min(...drag.old.map(v=>v[0])),maxX=Math.max(...drag.old.map(v=>v[0])),minY=Math.min(...drag.old.map(v=>v[1])),maxY=Math.max(...drag.old.map(v=>v[1]));dx=clamp(dx,-minX,canvas.width-maxX);dy=clamp(dy,-minY,canvas.height-maxY);drag.old.forEach((v,i)=>q[i]=[v[0]+dx,v[1]+dy])}redraw()};
+canvas.onpointerup=canvas.onpointercancel=()=>{if(drag&&JSON.stringify(drag.old)===JSON.stringify(quads[sel])){history.pop();historyButtons()}drag=null;canvas.style.cursor='crosshair'};
+window.onkeydown=e=>{if((e.key==='Delete'||e.key==='Backspace')&&sel>=0&&e.target.tagName!=='INPUT'){$('remove').click()}};
+// Perspective rectification by mapping each output pixel through a projective homography.
+function solve(A,b){for(let i=0;i<8;i++){let m=i;for(let j=i+1;j<8;j++)if(Math.abs(A[j][i])>Math.abs(A[m][i]))m=j;[A[i],A[m]]=[A[m],A[i]];[b[i],b[m]]=[b[m],b[i]];if(Math.abs(A[i][i])<1e-9)return null;let d=A[i][i];for(let k=i;k<8;k++)A[i][k]/=d;b[i]/=d;for(let j=0;j<8;j++)if(j!==i){let t=A[j][i];for(let k=i;k<8;k++)A[j][k]-=t*A[i][k];b[j]-=t*b[i]}}return b}
+function homography(q,W,H){let dest=[[0,0],[W,0],[W,H],[0,H]],A=[],b=[];for(let i=0;i<4;i++){let [u,v]=dest[i],[x,y]=q[i];A.push([u,v,1,0,0,0,-u*x,-v*x]);b.push(x);A.push([0,0,0,u,v,1,-u*y,-v*y]);b.push(y)}return solve(A,b)}
+function rectify(q,src){let dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]),W=clamp(Math.round((dist(q[0],q[1])+dist(q[3],q[2]))/2),1,3500),H=clamp(Math.round((dist(q[0],q[3])+dist(q[1],q[2]))/2),1,3500),h=homography(q,W,H);if(!h)return null;let out=document.createElement('canvas');out.width=W;out.height=H;let o=out.getContext('2d'),pixels=o.createImageData(W,H),data=pixels.data,s=src.data,sw=src.width,sh=src.height;for(let y=0;y<H;y++)for(let x=0;x<W;x++){let d=h[6]*x+h[7]*y+1,sx=(h[0]*x+h[1]*y+h[2])/d,sy=(h[3]*x+h[4]*y+h[5])/d,k=(y*W+x)*4;if(sx<0||sy<0||sx>=sw-1||sy>=sh-1){data[k]=data[k+1]=data[k+2]=255;data[k+3]=255;continue}let ix=Math.floor(sx),iy=Math.floor(sy),fx=sx-ix,fy=sy-iy;for(let ch=0;ch<3;ch++){let p=(iy*sw+ix)*4+ch;data[k+ch]=s[p]*(1-fx)*(1-fy)+s[p+4]*fx*(1-fy)+s[p+sw*4]*(1-fx)*fy+s[p+sw*4+4]*fx*fy}data[k+3]=255}o.putImageData(pixels,0,0);return out}
+// Conservative, local image enhancement. Never synthesizes text or replaces original pixels in source.
+function enhanceDocument(input){
+ // Local adaptive enhancement: no AI synthesis; original pixels remain untouched.
+ const w=input.width,h=input.height,src=input.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h);
+ const a=src.data,n=w*h,lum=new Uint8Array(n),hist=new Uint32Array(256);
+ let total=0;
+ for(let i=0;i<n;i++){let k=i*4,y=Math.round(.2126*a[k]+.7152*a[k+1]+.0722*a[k+2]);lum[i]=y;hist[y]++;total+=y}
+ let c=0,lo=0,hi=255;
+ for(let i=0;i<256;i++){c+=hist[i];if(c>=n*.012){lo=i;break}}
+ c=0;for(let i=255;i>=0;i--){c+=hist[i];if(c>=n*.012){hi=i;break}}
+ const mean=total/n,range=Math.max(1,hi-lo);
+ // Adaptive global normalization, deliberately capped to avoid changing ink colors.
+ const gain=Math.min(1.38,Math.max(1.05,205/range));
+ const gamma=mean<125?.84:mean>205?1.07:.94;
+ const lut=new Uint8Array(256);
+ for(let v=0;v<256;v++){
+  let norm=Math.max(0,Math.min(1,((v-mean)*gain+mean)/255));
+  lut[v]=Math.round(255*Math.pow(norm,gamma));
+ }
+ // Local brightness correction via coarse luminance grid and bilinear interpolation.
+ const cell=48,gw=Math.ceil(w/cell),gh=Math.ceil(h/cell),sums=new Float64Array(gw*gh),counts=new Uint32Array(gw*gh);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){let j=(Math.floor(y/cell)*gw+Math.floor(x/cell));sums[j]+=lum[y*w+x];counts[j]++}
+ for(let i=0;i<sums.length;i++)sums[i]/=Math.max(1,counts[i]);
+ const b=new Uint8ClampedArray(a.length);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+  let gx=Math.max(0,Math.min(gw-1,x/cell-.5)),gy=Math.max(0,Math.min(gh-1,y/cell-.5));
+  let x0=Math.floor(gx),y0=Math.floor(gy),x1=Math.min(gw-1,x0+1),y1=Math.min(gh-1,y0+1),fx=gx-x0,fy=gy-y0;
+  let m=(1-fy)*((1-fx)*sums[y0*gw+x0]+fx*sums[y0*gw+x1])+fy*((1-fx)*sums[y1*gw+x0]+fx*sums[y1*gw+x1]);
+  let correction=Math.max(-16,Math.min(18,(mean-m)*.30)),k=(y*w+x)*4;
+  for(let ch=0;ch<3;ch++)b[k+ch]=Math.max(0,Math.min(255,lut[a[k+ch]]+correction));b[k+3]=255;
+ }
+ // Gentle edge-preserving 3x3 denoise: only smooth pixels in nearly flat neighborhoods.
+ const clean=new Uint8ClampedArray(b);
+ for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+  let i=y*w+x,k=i*4,center=lum[i],mn=255,mx=0;
+  for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++){let v=lum[i+yy*w+xx];mn=Math.min(mn,v);mx=Math.max(mx,v)}
+  if(mx-mn>38)continue;
+  for(let ch=0;ch<3;ch++){
+   let sum=0;for(let yy=-1;yy<=1;yy++)for(let xx=-1;xx<=1;xx++)sum+=b[k+(yy*w+xx)*4+ch];
+   clean[k+ch]=Math.round(b[k+ch]*.62+(sum/9)*.38);
+  }
+ }
+ // Very small sharpen only on genuine moderate edges, after denoise.
+ if(w>=240&&h>=160){let base=new Uint8ClampedArray(clean);
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
+   let k=(y*w+x)*4,detail=0;
+   for(let ch=0;ch<3;ch++)detail+=base[k+ch]-(base[k-4+ch]+base[k+4+ch]+base[k-w*4+ch]+base[k+w*4+ch])/4;
+   detail/=3;if(Math.abs(detail)<9||Math.abs(detail)>60)continue;
+   for(let ch=0;ch<3;ch++)clean[k+ch]=Math.max(0,Math.min(255,base[k+ch]+Math.max(-6,Math.min(6,detail*.16))));
+  }
+ }
+ let out=document.createElement('canvas');out.width=w;out.height=h;
+ out.getContext('2d').putImageData(new ImageData(clean,w,h),0,0);return out;
+}
+
+function rotateCanvas(c){let temp=document.createElement('canvas');temp.width=c.height;temp.height=c.width;let t=temp.getContext('2d');t.translate(temp.width,0);t.rotate(Math.PI/2);t.drawImage(c,0,0);return temp}
+const toBlob=c=>new Promise(resolve=>c.toBlob(resolve,'image/png'));
+$('crop').onclick=async()=>{
+ urls.forEach(URL.revokeObjectURL);urls=[];let root=$('results');root.innerHTML='';exportsList=[];$('downloadall').disabled=true;
+ if(!quads.length){root.textContent='أضف مستمسكاً أولاً';return}
+ let original=document.createElement('canvas');original.width=img.naturalWidth;original.height=img.naturalHeight;
+ let og=original.getContext('2d',{willReadFrequently:true});og.drawImage(img,0,0);
+ let src=og.getImageData(0,0,original.width,original.height);
+ $('status').textContent='جاري قص وتحسين المستمسكات...';
+ for(let i=0;i<quads.length;i++){
+  let raw=rectify(quads[i],src);if(!raw)continue;
+  let enhanced=enhanceDocument(raw),isEnhanced=$('enhance').checked;
+  let url=null,box=document.createElement('div');box.className='result';
+  let title=document.createElement('strong');title.textContent='المستمسك '+(i+1);
+  let image=document.createElement('img');image.alt='معاينة المستمسك '+(i+1);
+  let compare=document.createElement('div');compare.className='compare';let side=document.createElement('div');side.className='sidecompare';let originalPreview=document.createElement('img'),enhancedPreview=document.createElement('img');let left=document.createElement('figure'),right=document.createElement('figure');let lc=document.createElement('figcaption'),rc=document.createElement('figcaption');lc.textContent='الأصل';rc.textContent='✨ المحسّن';left.append(originalPreview,lc);right.append(enhancedPreview,rc);side.append(left,right);
+  let originalBtn=document.createElement('button');originalBtn.textContent='الأصل';
+  let enhancedBtn=document.createElement('button');enhancedBtn.textContent='✨ المحسّن';
+  let a=document.createElement('a');a.download=`document_${i+1}.png`;a.textContent='⬇ تحميل الصورة';
+  let rotate=document.createElement('button');rotate.textContent='↻ تدوير 90°';
+  let currentIndex=exportsList.length;exportsList.push({name:`document_${i+1}.png`,blob:null});
+  async function update(){let selected=isEnhanced?enhanced:raw,blob=await toBlob(selected);if(url){URL.revokeObjectURL(url);urls=urls.filter(x=>x!==url)}url=URL.createObjectURL(blob);urls.push(url);image.src=url;a.href=url;exportsList[currentIndex].blob=blob;originalBtn.classList.toggle('active',!isEnhanced);enhancedBtn.classList.toggle('active',isEnhanced)}
+  originalBtn.onclick=async()=>{isEnhanced=false;await update()};enhancedBtn.onclick=async()=>{isEnhanced=true;await update()};
+  rotate.onclick=async()=>{raw=rotateCanvas(raw);enhanced=rotateCanvas(enhanced);originalPreview.src=raw.toDataURL('image/png');enhancedPreview.src=enhanced.toDataURL('image/png');await update()};
+  compare.append(originalBtn,enhancedBtn);box.append(title,side,image,compare,rotate,a);root.append(box);originalPreview.src=raw.toDataURL('image/png');enhancedPreview.src=enhanced.toDataURL('image/png');await update();
+ }
+ $('downloadall').disabled=!exportsList.length;
+ $('status').textContent=`تم تجهيز ${exportsList.length} صورة. التحسين اختياري، ويمكنك مقارنة الأصل والمحسّن لكل مستمسك قبل التحميل.`;
+};
+// Standard ZIP archive (stored entries), works fully offline without dependencies.
+const enc=new TextEncoder();const crcTable=Array.from({length:256},(_,n)=>{for(let k=0;k<8;k++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0});
+function crc32(data){let c=0xffffffff;for(const b of data)c=crcTable[(c^b)&255]^(c>>>8);return(c^0xffffffff)>>>0}
+function zipParts(entries){let chunks=[],central=[],offset=0;for(const {name,bytes} of entries){let filename=enc.encode(name),crc=crc32(bytes),local=new Uint8Array(30+filename.length),v=new DataView(local.buffer);v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(8,0,true);v.setUint32(14,crc,true);v.setUint32(18,bytes.length,true);v.setUint32(22,bytes.length,true);v.setUint16(26,filename.length,true);local.set(filename,30);chunks.push(local,bytes);let c=new Uint8Array(46+filename.length),d=new DataView(c.buffer);d.setUint32(0,0x02014b50,true);d.setUint16(4,20,true);d.setUint16(6,20,true);d.setUint32(16,crc,true);d.setUint32(20,bytes.length,true);d.setUint32(24,bytes.length,true);d.setUint16(28,filename.length,true);d.setUint32(42,offset,true);c.set(filename,46);central.push(c);offset+=local.length+bytes.length}let centralSize=central.reduce((n,c)=>n+c.length,0),end=new Uint8Array(22),e=new DataView(end.buffer);e.setUint32(0,0x06054b50,true);e.setUint16(8,entries.length,true);e.setUint16(10,entries.length,true);e.setUint32(12,centralSize,true);e.setUint32(16,offset,true);return new Blob([...chunks,...central,end],{type:'application/zip'})}
+$('downloadall').onclick=async()=>{if(!exportsList.length)return;let entries=await Promise.all(exportsList.map(async x=>({name:x.name,bytes:new Uint8Array(await x.blob.arrayBuffer())})));let zip=zipParts(entries),url=URL.createObjectURL(zip),a=document.createElement('a');a.href=url;a.download='SmartCrop_documents.zip';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)};
+redraw();
+</script><script>
+// Smart Crop V8: multi-image collection and A4 composition; the V7 crop engine is unchanged.
+const collected=[];
+let sequence=0;
+const A4=$('a4-preview'),a4ctx=A4.getContext('2d');
+function updateCollection(){
+ $('collection-count').textContent=collected.length;
+ const root=$('collection-items');root.innerHTML='';
+ if(!collected.length){root.innerHTML='<div class="collection-empty">بعد القص، اضغط «إضافة للمجموعة» حتى تظهر مستمسكاتك هنا.</div>'}
+ collected.forEach((item,i)=>{
+  const card=document.createElement('div');card.className='collection-item';card.draggable=true;card.dataset.id=item.id;
+  const pic=document.createElement('img');pic.src=item.url;pic.alt='المستمسك '+(i+1);
+  const label=document.createElement('strong');label.textContent='مستمسك '+(i+1);
+  const actions=document.createElement('div');actions.className='item-actions';
+  for(const [symbol,delta,desc] of [['↑',-1,'للأعلى'],['↓',1,'للأسفل']]){
+   const b=document.createElement('button');b.type='button';b.textContent=symbol;b.title=desc;b.disabled=(i+delta<0||i+delta>=collected.length);
+   b.onclick=()=>{const [m]=collected.splice(i,1);collected.splice(i+delta,0,m);updateCollection()};actions.append(b)
+  }
+  const remove=document.createElement('button');remove.type='button';remove.textContent='حذف';remove.onclick=()=>{URL.revokeObjectURL(item.url);collected.splice(i,1);updateCollection()};actions.append(remove);
+  const sizing=document.createElement('div');sizing.className='item-sizing';
+  const sizeLabel=document.createElement('label');sizeLabel.textContent='الحجم على A4';
+  const sizeValue=document.createElement('span');sizeValue.textContent=(item.size||100)+'%';
+  const sizeRange=document.createElement('input');sizeRange.type='range';sizeRange.min='50';sizeRange.max='135';sizeRange.step='5';sizeRange.value=item.size||100;sizeRange.setAttribute('aria-label','حجم المستمسك '+(i+1));
+  sizeRange.oninput=()=>{item.size=Number(sizeRange.value);sizeValue.textContent=item.size+'%';drawA4()};
+  const sizeRow=document.createElement('div');sizeRow.className='size-row';sizeRow.append(sizeLabel,sizeValue);
+  sizing.append(sizeRow,sizeRange);
+  card.append(pic,label,sizing,actions);
+  card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',String(item.id));e.dataTransfer.effectAllowed='move';card.classList.add('dragging')});
+  card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  card.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move'});
+  card.addEventListener('drop',e=>{e.preventDefault();const id=Number(e.dataTransfer.getData('text/plain'));const from=collected.findIndex(x=>x.id===id),to=collected.findIndex(x=>x.id===item.id);if(from<0||to<0||from===to)return;const [m]=collected.splice(from,1);collected.splice(to,0,m);updateCollection()});
+  root.append(card);
+ });
+ drawA4();
+}
+function loadPreviewImage(item){return new Promise((resolve,reject)=>{if(item.image){resolve(item.image);return}const im=new Image();im.onload=()=>{item.image=im;resolve(im)};im.onerror=reject;im.src=item.url})}
+let previewRevision=0;
+async function drawA4(){
+ const rev=++previewRevision;
+ a4ctx.fillStyle='#fff';a4ctx.fillRect(0,0,A4.width,A4.height);
+ const count=collected.length;if(!count){a4ctx.fillStyle='#94a3b8';a4ctx.textAlign='center';a4ctx.font='18px sans-serif';a4ctx.fillText('A4 Preview',A4.width/2,A4.height/2);return}
+ const images=await Promise.all(collected.map(loadPreviewImage));if(rev!==previewRevision)return;
+ const margin=46,gap=16,availW=A4.width-2*margin,availH=A4.height-2*margin;
+ // Search grid arrangements and maximize image area while retaining original proportions.
+ let best=null;
+ for(let cols=1;cols<=Math.min(count,5);cols++){
+  const rows=Math.ceil(count/cols),cellW=(availW-(cols-1)*gap)/cols,cellH=(availH-(rows-1)*gap)/rows;
+  if(cellW<=0||cellH<=0)continue;
+  const sizes=images.map(im=>{let scale=Math.min(cellW/im.width,cellH/im.height)*.72;return [im.width*scale,im.height*scale]});
+  const score=sizes.reduce((sum,[w,h])=>sum+w*h,0);
+  if(!best||score>best.score)best={cols,rows,cellW,cellH,sizes,score}
+ }
+ const {cols,rows,cellW,cellH,sizes}=best;
+ const gridHeight=rows*cellH+(rows-1)*gap,top=margin+(availH-gridHeight)/2;
+ images.forEach((im,i)=>{
+  const r=Math.floor(i/cols),c=i%cols,[baseW,baseH]=sizes[i];
+  const factor=(collected[i].size||100)/100;const w=Math.min(cellW,baseW*factor),h=Math.min(cellH,baseH*factor);
+  const x=margin+c*(cellW+gap)+(cellW-w)/2,y=top+r*(cellH+gap)+(cellH-h)/2;
+  a4ctx.drawImage(im,x,y,w,h);
+ });
+ // Footer is drawn onto the actual A4 canvas, so PNG and printed PDF match.
+ a4ctx.save();
+ a4ctx.textAlign='center';
+ a4ctx.textBaseline='middle';
+ a4ctx.font='13px Arial, sans-serif';
+ a4ctx.fillStyle='#8290a2';
+ a4ctx.fillText('© 2026 zaidmka.com', A4.width/2, A4.height-23);
+ a4ctx.restore();
+}
+$('add-to-collection').onclick=async()=>{
+ const entries=exportsList.filter(x=>x.blob);
+ if(!entries.length){$('status').textContent='اضغط قص المستمسكات أولاً';return}
+ for(const entry of entries){const blob=entry.blob;collected.push({id:++sequence,url:URL.createObjectURL(blob),image:null,size:100})}
+ $('add-to-collection').disabled=true;
+ $('status').textContent=`تمت إضافة ${entries.length} مستمسكات. المجموعة الآن ${collected.length}. ارفع صورة أخرى أو انتقل إلى A4.`;
+ updateCollection();
+ document.querySelector('.collection-card').scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('next-photo-input').onchange=e=>{if(!e.target.files.length)return;loadFile(e.target.files[0]);e.target.value='';$('status').textContent='تم فتح الصورة الجديدة. المستمسكات السابقة محفوظة بالمجموعة.';document.querySelector('.editor-card').scrollIntoView({behavior:'smooth'})};
+// After crop, the existing V7 crop handler populates exportsList; enable collection action.
+const originalCropHandler=$('crop').onclick;
+$('crop').onclick=async()=>{ $('add-to-collection').disabled=true;await originalCropHandler();$('add-to-collection').disabled=!exportsList.some(x=>x.blob)};
+$('clear-collection').onclick=()=>{if(!collected.length||confirm('مسح كل المستمسكات المجمّعة؟')){collected.forEach(x=>URL.revokeObjectURL(x.url));collected.length=0;updateCollection()}};
+$('reset-order').onclick=()=>{collected.sort((a,b)=>a.id-b.id);collected.forEach(x=>x.size=100);updateCollection()};
+$('save-a4').onclick=async()=>{if(!collected.length){alert('أضف مستمسكات أولاً');return}await drawA4();const a=document.createElement('a');a.download='SmartCrop_A4.png';a.href=A4.toDataURL('image/png');document.body.append(a);a.click();a.remove()};
+$('print-a4').onclick=async()=>{
+ if(!collected.length){alert('أضف مستمسكات أولاً');return}
+ await drawA4();const data=A4.toDataURL('image/png');
+ const win=window.open('','_blank');if(!win){alert('المتصفح منع نافذة الطباعة. اسمح بالنوافذ المنبثقة ثم حاول مجدداً.');return}
+ win.document.open();win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Smart Crop A4</title><style>@page{size:A4 portrait;margin:0}html,body{margin:0;padding:0;background:white}img{display:block;width:210mm;height:297mm;object-fit:fill}@media screen{body{background:#eee;display:flex;justify-content:center}img{box-shadow:0 4px 25px #aaa}}</style></head><body><img id="page" alt="A4" src="'+data+'"></body></html>');win.document.close();
+ win.document.getElementById('page').onload=()=>setTimeout(()=>win.print(),300);
+};
+updateCollection();
+</script><script>(function(){const button=document.getElementById('toggle-a4-preview');const panel=document.getElementById('a4-preview-panel');if(!button||!panel)return;button.addEventListener('click',()=>{const opened=panel.classList.toggle('is-open');button.setAttribute('aria-expanded',String(opened));button.textContent=opened?'إخفاء المعاينة  ▴':'عرض المعاينة  ▾';});})();</script><script>(function(){
+ const mobile=()=>window.matchMedia('(max-width:700px)').matches;
+ const go=(selector)=>{if(!mobile())return;const target=document.querySelector(selector);if(target)requestAnimationFrame(()=>target.scrollIntoView({behavior:'smooth',block:'start'}));};
+ ['file','camera','next-photo-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('change',()=>{if(el.files&&el.files.length)setTimeout(()=>go('.editor-card'),180);});});
+ const crop=document.getElementById('crop');if(crop)crop.addEventListener('click',()=>setTimeout(()=>go('.results-card'),150));
+ const add=document.getElementById('add-to-collection');if(add)add.addEventListener('click',()=>setTimeout(()=>go('.collection-card'),170));
+})();</script></body></html>
